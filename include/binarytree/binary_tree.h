@@ -21,21 +21,23 @@ class BinaryTree
 {
   static_assert(is_comparable_v<T>, "Type T must be comparable using < operator");
 public:
-  BinaryTree();
+   BinaryTree();
   ~BinaryTree();
 
-  void insert(T value);
-  bool search(T value);
-  void remove(T value);
+  void insert(const T &value);
+  bool search(const T &value);
+  void remove(const T &value);
 
 private:
-  TreeNode<T>* m_root;
+  TreeNode<T>* m_root = nullptr;
 
-  void insert_pvt(TreeNode<T>*& node, T value);
-  bool search_pvt(TreeNode<T>* node, T value);
-  TreeNode<T>* remove_pvt(TreeNode<T>* node, T value);
-  TreeNode<T>* findMin_pvt(TreeNode<T>* node);
-  void destroyTree_pvt(TreeNode<T>* node);
+  // ---- Helper methods ---- //
+
+  void insert_pvt(TreeNode<T>*& node, const T &value) const;
+  bool search_pvt(const TreeNode<T>* const node, const T &value) const;
+  TreeNode<T>* remove_pvt(TreeNode<T>* node, const T &value) const;
+  TreeNode<T>* findMin_pvt(TreeNode<T>* node) const;
+  void destroyTree_pvt(const TreeNode<T>* const node) const;
 };
 
 } // namespace ddlib

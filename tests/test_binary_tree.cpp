@@ -52,7 +52,7 @@ TEST(BinaryTreeTest, InsertAndSearchComparable)
 
 TEST(BinaryTreeTest, InsertNotComparable)
 {
-  // This will not compile: type must implement the < operator. Uncomment the following lines to see the compilation error.
+  // // This will not compile: type must implement the < operator. Uncomment the following lines to see the compilation error.
   // ddlib::BinaryTree<NotComparable> tree;
 }
 
