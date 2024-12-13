@@ -56,6 +56,19 @@ TEST(BinaryTreeTest, InsertNotComparable)
   // ddlib::BinaryTree<NotComparable> tree;
 }
 
+// Same as above, but with type `std::string`
+TEST(BinaryTreeTest, InsertAndSearchString)
+{
+  ddlib::BinaryTree<std::string> tree;
+  tree.insert("hello");
+  tree.insert("world");
+
+  EXPECT_TRUE(tree.search("hello"));
+  EXPECT_TRUE(tree.search("world"));
+  EXPECT_FALSE(tree.search("foo"));
+}
+
+
 // // Defining a `main` function in the test source file is optional for the Google Test framework, because it provides
 // a default one that can be linked in CMakeLists.txt. A custom `main` function can be defined to run the tests in a
 // specific order or to perform additional setup or teardown operations.

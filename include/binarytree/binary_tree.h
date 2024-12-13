@@ -8,6 +8,7 @@
 
 #include "is_comparable.h" // custom type trait to check if a type is comparable
 #include "tree_node.h"
+#include <memory>
 
 namespace ddlib
 {
@@ -25,19 +26,18 @@ public:
   ~BinaryTree();
 
   void insert(const T &value);
-  bool search(const T &value);
+  bool search(const T &value) const;
   void remove(const T &value);
 
 private:
-  TreeNode<T>* m_root = nullptr;
+  std::unique_ptr<TreeNode<T>> m_root;
 
   // ---- Helper methods ---- //
 
-  void insert_pvt(TreeNode<T>*& node, const T &value) const;
+  void insert_pvt(std::unique_ptr<TreeNode<T>>& node, const T &value) const;
   bool search_pvt(const TreeNode<T>* const node, const T &value) const;
-  TreeNode<T>* remove_pvt(TreeNode<T>* node, const T &value) const;
+  std::unique_ptr<TreeNode<T>> remove_pvt(std::unique_ptr<TreeNode<T>> node, const T &value) const;
   TreeNode<T>* findMin_pvt(TreeNode<T>* node) const;
-  void destroyTree_pvt(const TreeNode<T>* const node) const;
 };
 
 } // namespace ddlib
