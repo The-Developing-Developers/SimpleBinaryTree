@@ -3,8 +3,6 @@
  * @brief Implementation file for the `BinaryTree` class.
  **/
 
-#include "binary_tree.h"
-
 namespace ddlib
 {
 
@@ -42,11 +40,19 @@ void BinaryTree<T>::insert_pvt(std::unique_ptr<TreeNode<T>> &node, const T &valu
 template <typename T>
 bool BinaryTree<T>::search(const T &value) const
 {
-  return search_pvt(m_root.get(), value);
+  return search_pvt(m_root, value);
 }
 
+/**
+ * @brief Search for a value in the tree.
+ * Receives a reference to a `const` unique pointer to a `TreeNode` because the node is not modified during the search.
+ *
+ * @param node The node to start the search from
+ * @param value The value to search for
+ * @return bool
+ **/
 template <typename T>
-bool BinaryTree<T>::search_pvt(const TreeNode<T>* const node, const T &value) const
+bool BinaryTree<T>::search_pvt(const std::unique_ptr<TreeNode<T>> &node, const T &value) const
 {
   if (node == nullptr)
   {
@@ -58,11 +64,11 @@ bool BinaryTree<T>::search_pvt(const TreeNode<T>* const node, const T &value) co
   }
   else if (value < node->m_value)
   {
-    return search_pvt(node->m_left.get(), value);
+    return search_pvt(node->m_left, value);
   }
   else
   {
-    return search_pvt(node->m_right.get(), value);
+    return search_pvt(node->m_right, value);
   }
 }
 
@@ -73,7 +79,7 @@ void BinaryTree<T>::remove(const T &value)
 }
 
 template <typename T>
-std::unique_ptr<TreeNode<T>> BinaryTree<T>::remove_pvt(std::unique_ptr<TreeNode<T>> node, const T &value) const
+std::unique_ptr<TreeNode<T>> BinaryTree<T>::remove_pvt(std::unique_ptr<TreeNode<T>> node, const T& value) const
 {
   if (node == nullptr)
   {
@@ -93,7 +99,7 @@ std::unique_ptr<TreeNode<T>> BinaryTree<T>::remove_pvt(std::unique_ptr<TreeNode<
     if (node->m_left == nullptr && node->m_right == nullptr)
     {
       // Node has no children: since `node` is a `unique_ptr`, it will be automatically deleted
-      node = nullptr;
+      node = nullptr; // Calls the destructor of the node
     }
     else if (node->m_left == nullptr)
     {
@@ -107,26 +113,33 @@ std::unique_ptr<TreeNode<T>> BinaryTree<T>::remove_pvt(std::unique_ptr<TreeNode<
     }
     else
     {
-      // Node has two children: replace it with the minimum value in the right subtree
-      TreeNode<T>* temp = findMin_pvt(node->m_right.get());
-      node->m_value = temp->m_value;
-      node->m_right = remove_pvt(std::move(node->m_right), temp->m_value);
+      // Node has two children: replace its value with the value contained in the minimum node of the right subtree
+      const std::unique_ptr<TreeNode<T>>& temp = findMin_pvt(node->m_right); // Find the minimum node in the right subtree
+      node->m_value = temp->m_value; // Replace the node's value, effectively "removing" the node
+      node->m_right = remove_pvt(std::move(node->m_right), temp->m_value); // Remove the minimum node from the right subtree
     }
   }
 
   return node;
 }
 
+/**
+ * @brief Find the minimum node in the tree.
+ * Receives a reference to a `const` unique pointer to a `TreeNode` because the node is not modified during the search.
+ *
+ * @param node the node to start the search from
+ * @return `const std::unique_ptr<TreeNode<T>>&` reference to the minimum node in the tree
+ **/
 template <typename T>
-TreeNode<T>* BinaryTree<T>::findMin_pvt(TreeNode<T>* node) const
+const std::unique_ptr<TreeNode<T>>& BinaryTree<T>::findMin_pvt(const std::unique_ptr<TreeNode<T>>& node) const
 {
-  while (node->m_left != nullptr)
+  const std::unique_ptr<TreeNode<T>>* current = &node; // Pointer to the current node. Used to traverse the tree
+  while ((*current)->m_left != nullptr)
   {
-    node = node->m_left.get();
+    current = &((*current)->m_left);
   }
 
-  return node;
+  return *current;
 }
-
 
 } // namespace ddlib

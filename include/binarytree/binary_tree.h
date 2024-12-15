@@ -35,9 +35,9 @@ private:
   // ---- Helper methods ---- //
 
   void insert_pvt(std::unique_ptr<TreeNode<T>>& node, const T &value) const;
-  bool search_pvt(const TreeNode<T>* const node, const T &value) const;
+  bool search_pvt(const std::unique_ptr<TreeNode<T>> &node, const T &value) const;
   std::unique_ptr<TreeNode<T>> remove_pvt(std::unique_ptr<TreeNode<T>> node, const T &value) const;
-  TreeNode<T>* findMin_pvt(TreeNode<T>* node) const;
+  const std::unique_ptr<TreeNode<T>>& findMin_pvt(const std::unique_ptr<TreeNode<T>>& node) const;
 };
 
 } // namespace ddlib
