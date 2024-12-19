@@ -6,22 +6,26 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
+#include <memory>
+
 namespace ddlib
 {
 
 /**
  * @brief The `TreeNode` structure represents a node in a binary tree. It can contain a value of type `T` and pointers
- * to the left and right children (if any).
+ * to the left and right children (if any).\n
+ * The data members are public for simplicity. If they were private, we would need to provide getters and setters.
  **/
 template <typename T>
 struct TreeNode
 {
   T m_value;
-  TreeNode* m_left;
-  TreeNode* m_right;
+  std::unique_ptr<TreeNode> m_left  = nullptr;
+  std::unique_ptr<TreeNode> m_right = nullptr;
 
-  TreeNode(T val)
-  : m_value(val), m_left(nullptr), m_right(nullptr) {}
+  TreeNode(const T &value)
+  : m_value(value)
+  {}
 };
 
 } // namespace ddlib

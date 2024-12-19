@@ -8,6 +8,7 @@
 
 #include "is_comparable.h" // custom type trait to check if a type is comparable
 #include "tree_node.h"
+#include <memory>
 
 namespace ddlib
 {
@@ -21,21 +22,22 @@ class BinaryTree
 {
   static_assert(is_comparable_v<T>, "Type T must be comparable using < operator");
 public:
-  BinaryTree();
+   BinaryTree();
   ~BinaryTree();
 
-  void insert(T value);
-  bool search(T value);
-  void remove(T value);
+  void insert(const T &value);
+  bool search(const T &value) const;
+  void remove(const T &value);
 
 private:
-  TreeNode<T>* m_root;
+  std::unique_ptr<TreeNode<T>> m_root;
 
-  void insert_pvt(TreeNode<T>*& node, T value);
-  bool search_pvt(TreeNode<T>* node, T value);
-  TreeNode<T>* remove_pvt(TreeNode<T>* node, T value);
-  TreeNode<T>* findMin_pvt(TreeNode<T>* node);
-  void destroyTree_pvt(TreeNode<T>* node);
+  // ---- Helper methods ---- //
+
+  void insert_pvt(std::unique_ptr<TreeNode<T>>& node, const T &value) const;
+  bool search_pvt(const std::unique_ptr<TreeNode<T>> &node, const T &value) const;
+  std::unique_ptr<TreeNode<T>> remove_pvt(std::unique_ptr<TreeNode<T>> node, const T &value) const;
+  const std::unique_ptr<TreeNode<T>>& findMin_pvt(const std::unique_ptr<TreeNode<T>>& node) const;
 };
 
 } // namespace ddlib
