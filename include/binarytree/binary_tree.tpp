@@ -87,7 +87,7 @@ std::unique_ptr<TreeNode<T>> BinaryTree<T>::remove_pvt(std::unique_ptr<TreeNode<
   }
   else if (value < node->m_value)
   {
-    node->m_left = remove_pvt(std::move(node->m_left), value);
+    node->m_left = remove_pvt(std::move(node->m_left), value); // remove_pvt returns an rvalue, so that node->m_left can release its owned object (if any) and take ownership of the new object
   }
   else if (value > node->m_value)
   {
@@ -103,12 +103,12 @@ std::unique_ptr<TreeNode<T>> BinaryTree<T>::remove_pvt(std::unique_ptr<TreeNode<
     }
     else if (node->m_left == nullptr)
     {
-      // Node has only right child: replace it with the right child and delete the node
+      // Node has only right child: replace node with its right child and delete the node
       return std::move(node->m_right);
     }
     else if (node->m_right == nullptr)
     {
-      // Node has only left child: replace it with the left child and delete the node
+      // Node has only left child: replace node with its left child and delete the node
       return std::move(node->m_left);
     }
     else
@@ -120,7 +120,7 @@ std::unique_ptr<TreeNode<T>> BinaryTree<T>::remove_pvt(std::unique_ptr<TreeNode<
     }
   }
 
-  return node;
+  return node; // moves (not copies) the node back to the caller
 }
 
 /**
