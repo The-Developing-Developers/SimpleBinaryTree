@@ -49,7 +49,7 @@ bool BinaryTree<T>::search(const T &value) const
  *
  * @param node The node to start the search from
  * @param value The value to search for
- * @return bool
+ * @return `bool` `true` if the value is found, `false` otherwise
  **/
 template <typename T>
 bool BinaryTree<T>::search_pvt(const std::unique_ptr<TreeNode<T>> &node, const T &value) const
@@ -78,6 +78,14 @@ void BinaryTree<T>::remove(const T &value)
   m_root = remove_pvt(std::move(m_root), value);
 }
 
+/**
+ * @brief Remove a value from the tree.
+ * Receives a `unique_ptr` because the node is modified during the search.
+ *
+ * @param node The node to start the search from
+ * @param value The value to remove
+ * @return `std::unique_ptr<TreeNode<T>>` The new node after the removal
+ **/
 template <typename T>
 std::unique_ptr<TreeNode<T>> BinaryTree<T>::remove_pvt(std::unique_ptr<TreeNode<T>> node, const T& value) const
 {
