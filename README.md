@@ -7,7 +7,11 @@
   - [Method 2. CMake](#method-2-cmake)
 - [Tests Executable](#tests-executable)
   - [Build Script](#build-script)
+    - [Prerequisites](#prerequisites)
     - [Invoking the Build Script](#invoking-the-build-script)
+- [Documentation](#documentation)
+  - [Prerequisites](#prerequisites-1)
+  - [Generating the Documentation](#generating-the-documentation)
 
 
 # Description
@@ -63,7 +67,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE SimpleBinaryTree)
 
 # Tests Executable
 
-This repository includes a [test program](tests/test_binary_tree.cpp), built with Google Test, that also demonstrates how to use the logger.
+This repository includes a [test program](tests/test_binary_tree.cpp), built with Google Test, that also demonstrates how to use the binary tree.
 
 Building the test program is disabled by default, so that it does not automatically download Google Test and create unnecessary artefacts in your project.
 
@@ -80,14 +84,15 @@ Alternatively, you can navigate to the `tests` directory and invoke `ctest` to r
 
 If you are just interested in building the test program, you can use the provided Python script. The script will compile the program and create an executable file under the `build` directory (may vary according to the build system used).
 
-The build script will autodetect the platform and use the appropriate build system generator. You can also specify the generator to use by passing the name of the generator.
+### Prerequisites
 
-**WARNING**: The Python script requires:
+The Python script requires:
 - **Python 3.8** or later.
 - **CMake 3.12** or later.
 
-
 ### Invoking the Build Script
+
+The build script will autodetect the platform and use the appropriate build system generator. You can also specify the generator to use by passing the name of the generator.
 
 Invoke the script from the root directory of the Simple Binary Tree repository:
 - Linux / MacOS:
@@ -99,7 +104,7 @@ Invoke the script from the root directory of the Simple Binary Tree repository:
   python .\scripts\build.py
   ```
 
-For example, if you wish to specify the generator to be used by CMake, you can pass the generator name as an argument to the script:
+If you wish to specify the generator to be used by CMake, you can pass the generator name as an argument to the script. For example:
 - Linux / MacOS:
   ```
   python3 ./scripts/build.py "Unix Makefiles"
@@ -108,3 +113,21 @@ For example, if you wish to specify the generator to be used by CMake, you can p
   ```PowerShell
   python .\scripts\build.py "Visual Studio 16 2019"
   ```
+
+# Documentation
+
+The documentation for this project is generated with Doxygen.
+
+## Prerequisites
+
+- [Doxygen](https://www.doxygen.nl/download.html)
+- [Graphviz](https://graphviz.org/download/) (required for generating diagrams)
+
+## Generating the Documentation
+
+You can generate the documentation by running the `doxygen Doxyfile` command in the `docs/doxygen` directory of the repository. The generated documentation will be placed in the `output` subdirectory.
+
+```bash
+cd docs/doxygen
+doxygen Doxyfile
+```
