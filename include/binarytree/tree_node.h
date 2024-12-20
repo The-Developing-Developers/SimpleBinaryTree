@@ -6,6 +6,8 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
+#include <memory>
+
 namespace ddlib
 {
 
@@ -18,8 +20,8 @@ template <typename T>
 struct TreeNode
 {
   T m_value;
-  TreeNode* m_left  = nullptr;
-  TreeNode* m_right = nullptr;
+  std::unique_ptr<TreeNode> m_left  = nullptr;
+  std::unique_ptr<TreeNode> m_right = nullptr;
 
   TreeNode(const T &value)
   : m_value(value)
