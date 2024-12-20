@@ -6,6 +6,8 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
+#include <memory>
+
 namespace ddlib
 {
 
