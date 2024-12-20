@@ -25,8 +25,23 @@ public:
    BinaryTree();
   ~BinaryTree();
 
+  /**
+   * @brief Inserts a value into the tree.
+   * @param value The value to insert.
+   **/
   void insert(const T &value);
+
+  /**
+   * @brief Searches for a value in the tree.
+   * @param value The value to search for.
+   * @return `bool` `true` if the value is found, `false` otherwise.
+   **/
   bool search(const T &value) const;
+
+  /**
+   * @brief Removes a value from the tree.
+   * @param value The value to remove.
+   **/
   void remove(const T &value);
 
 private:
