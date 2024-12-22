@@ -15,7 +15,7 @@ class Comparable
 public:
   Comparable(int value) : m_value(value) {}
   bool  operator<(const Comparable& other) const { return m_value <  other.m_value; }
-  bool operator==(const Comparable& other) const { return m_value == other.m_value; }
+  bool operator==(const Comparable& other) const { return m_value == other.m_value; } // Only used for testing purposes by Google Test
 
 private:
   int m_value;

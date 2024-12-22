@@ -1,4 +1,4 @@
-message("\n*** Configuring tests for SimpleLogger library ***\n")
+message("\n*** Configuring tests for ${PROJECT_NAME} library ***\n")
 
 include(FetchContent) # Include the `FetchContent` module, used to download and unpack external projects at configure time.
 

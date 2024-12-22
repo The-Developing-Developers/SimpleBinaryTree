@@ -8,6 +8,7 @@
 
 #include "is_comparable.h" // custom type trait to check if a type is comparable
 #include "tree_node.h"
+#include <memory>
 
 namespace ddlib
 {
@@ -24,20 +25,34 @@ public:
    BinaryTree();
   ~BinaryTree();
 
+  /**
+   * @brief Inserts a value into the tree.
+   * @param value The value to insert.
+   **/
   void insert(const T &value);
-  bool search(const T &value);
+
+  /**
+   * @brief Searches for a value in the tree.
+   * @param value The value to search for.
+   * @return `bool` `true` if the value is found, `false` otherwise.
+   **/
+  bool search(const T &value) const;
+
+  /**
+   * @brief Removes a value from the tree.
+   * @param value The value to remove.
+   **/
   void remove(const T &value);
 
 private:
-  TreeNode<T>* m_root = nullptr;
+  std::unique_ptr<TreeNode<T>> m_root;
 
   // ---- Helper methods ---- //
 
-  void insert_pvt(TreeNode<T>*& node, const T &value) const;
-  bool search_pvt(const TreeNode<T>* const node, const T &value) const;
-  TreeNode<T>* remove_pvt(TreeNode<T>* node, const T &value) const;
-  TreeNode<T>* findMin_pvt(TreeNode<T>* node) const;
-  void destroyTree_pvt(const TreeNode<T>* const node) const;
+  void insert_pvt(std::unique_ptr<TreeNode<T>>& node, const T &value) const;
+  bool search_pvt(const std::unique_ptr<TreeNode<T>> &node, const T &value) const;
+  std::unique_ptr<TreeNode<T>> remove_pvt(std::unique_ptr<TreeNode<T>> node, const T &value) const;
+  const std::unique_ptr<TreeNode<T>>& findMin_pvt(const std::unique_ptr<TreeNode<T>>& node) const;
 };
 
 } // namespace ddlib
