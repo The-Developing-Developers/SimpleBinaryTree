@@ -3,6 +3,8 @@
  * @brief Implementation file for the `BinaryTree` class.
  **/
 
+#include <queue> // Used for level-order traversal
+
 namespace ddlib
 {
 
@@ -148,6 +150,86 @@ const std::unique_ptr<TreeNode<T>>& BinaryTree<T>::findMin_pvt(const std::unique
   }
 
   return *current;
+}
+
+template <typename T>
+void BinaryTree<T>::inOrderTraversal(const std::function<void(const T&)>& visit_cbck) const
+{
+  inOrderTraversal_pvt(m_root, visit_cbck);
+}
+
+template <typename T>
+void BinaryTree<T>::inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const
+{
+  if (node != nullptr)
+  {
+    inOrderTraversal_pvt(node->m_left, visit_cbck);
+    visit_cbck(node->m_value);
+    inOrderTraversal_pvt(node->m_right, visit_cbck);
+  }
+}
+
+template <typename T>
+void BinaryTree<T>::preOrderTraversal(const std::function<void(const T&)>& visit_cbck) const
+{
+  preOrderTraversal_pvt(m_root, visit_cbck);
+}
+
+template <typename T>
+void BinaryTree<T>::preOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const
+{
+  if (node != nullptr)
+  {
+    visit_cbck(node->m_value);
+    preOrderTraversal_pvt(node->m_left, visit_cbck);
+    preOrderTraversal_pvt(node->m_right, visit_cbck);
+  }
+}
+
+template <typename T>
+void BinaryTree<T>::postOrderTraversal(const std::function<void(const T&)>& visit_cbck) const
+{
+  postOrderTraversal_pvt(m_root, visit_cbck);
+}
+
+template <typename T>
+void BinaryTree<T>::postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const
+{
+  if (node != nullptr)
+  {
+    postOrderTraversal_pvt(node->m_left, visit_cbck);
+    postOrderTraversal_pvt(node->m_right, visit_cbck);
+    visit_cbck(node->m_value);
+  }
+}
+
+// Level-order traversal of the tree. Does not require a private helper method, because level-order traversal is
+// inherently iterative and uses a queue to manage the nodes to be visited.
+template <typename T>
+void BinaryTree<T>::levelOrderTraversal(const std::function<void(const T&)>& visit_cbck) const
+{
+  if (!m_root) return;
+
+  std::queue<TreeNode<T>*> nodeQueue;
+  nodeQueue.push(m_root.get());
+
+  while (!nodeQueue.empty())
+  {
+    TreeNode<T>* currentNode = nodeQueue.front(); // Get the front element
+    nodeQueue.pop(); // Remove the front element
+
+    visit_cbck(currentNode->m_value);
+
+    if (currentNode->m_left)
+    {
+      nodeQueue.push(currentNode->m_left.get());
+    }
+
+    if (currentNode->m_right)
+    {
+      nodeQueue.push(currentNode->m_right.get());
+    }
+  }
 }
 
 } // namespace ddlib
