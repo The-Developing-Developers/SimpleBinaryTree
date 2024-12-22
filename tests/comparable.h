@@ -1,7 +1,9 @@
 /**
  * @file comparable.h
  * @brief Header file for the `Comparable` and `NotComparable` classes.\n
- * These classes are used to demonstrate the usage of the `BinaryTree` class with a comparable and non-comparable type.
+ *
+ * These classes are used in the tests to demonstrate the usage of the `BinaryTree` class with a comparable and
+ * non-comparable type.
  **/
 
 #ifndef COMPARABLE_H

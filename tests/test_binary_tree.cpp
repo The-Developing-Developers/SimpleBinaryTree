@@ -18,8 +18,8 @@
 class BinaryTreeEnvironment : public ::testing::Environment
 {
 public:
-  ddlib::BinaryTree<int> tree; // The tree to be used in the tests
-  std::vector<int> result; // Vector to store the results of the traversals
+  static ddlib::BinaryTree<int> tree; // The tree to be used in the tests
+  static std::vector<int> result; // Vector to store the results of the traversals
 
   void SetUp() override
   {
@@ -61,11 +61,16 @@ public:
   }
 
   // Callback function to store the value of the node in the vector
-  void getNodeValue(const int& node_value)
+  static void getNodeValue(const int& node_value)
   {
     result.push_back(node_value);
   }
 };
+
+// -- Static member variable definitions -- //
+
+ddlib::BinaryTree<int> BinaryTreeEnvironment::tree;
+std::vector<int> BinaryTreeEnvironment::result;
 
 // -- Register the test environment -- //
 
@@ -103,6 +108,9 @@ TEST(BinaryTreeTest, Remove)
   EXPECT_TRUE(tree.search(7));
 }
 
+// -- Test Comparable and Non-Comparable Types -- //
+
+// Tests the insertion and search of a comparable type
 TEST(BinaryTreeTest, InsertAndSearchComparable)
 {
   ddlib::BinaryTree<Comparable> tree;
@@ -116,13 +124,14 @@ TEST(BinaryTreeTest, InsertAndSearchComparable)
   EXPECT_FALSE(tree.search(Comparable(10)));
 }
 
+// Tests the insertion of a non-comparable type
 TEST(BinaryTreeTest, InsertNotComparable)
 {
   // // This will not compile: type must implement the < operator. Uncomment the following lines to see the compilation error.
   // ddlib::BinaryTree<NotComparable> tree;
 }
 
-// Same as above, but with type `std::string`
+// Same as above, but with comparable type `std::string`
 TEST(BinaryTreeTest, InsertAndSearchString)
 {
   ddlib::BinaryTree<std::string> tree;
@@ -139,10 +148,8 @@ TEST(BinaryTreeTest, InsertAndSearchString)
 // Tests the in-order traversal of the tree, i.e., left-root-right
 TEST(BinaryTreeTest, InOrderTraversal)
 {
-  auto& local_env = *env; // Create a local reference to `env`, because the lambda expression cannot capture the `env` pointer directly, since it is not a local variable
-  local_env.result.clear(); // Clear the result vector before the traversal
-  auto local_lambda = [&local_env](const int& value) { local_env.getNodeValue(value); }; // The lambda is necessary, because the `getNodeValue` function is a non-static member function of the `BinaryTreeEnvironment` class. Member function pointers have a different type and calling convention compared to regular function pointers.
-  local_env.tree.inOrderTraversal(local_lambda); // Perform the traversal
+  env->result.clear(); // Clear the vector before the traversal
+  env->tree.inOrderTraversal(env->getNodeValue); // Perform the traversal
 
   std::vector<int> expected = { 8, 10, 11, 12, 13, 14, 15, 17, 19, 23, 24, 25, 26, 27, 30, 32 };
   EXPECT_EQ(env->result, expected);
@@ -151,10 +158,8 @@ TEST(BinaryTreeTest, InOrderTraversal)
 // Tests the pre-order traversal of the tree, i.e., root-left-right
 TEST(BinaryTreeTest, PreOrderTraversal)
 {
-  auto& local_env = *env;
-  local_env.result.clear();
-  auto local_lambda = [&local_env](const int& value) { local_env.getNodeValue(value); };
-  local_env.tree.preOrderTraversal(local_lambda);
+  env->result.clear();
+  env->tree.preOrderTraversal(env->getNodeValue);
 
   std::vector<int> expected = { 17, 14, 11, 10, 8, 12, 13, 15, 26, 24, 19, 23, 25, 27, 30, 32 };
   EXPECT_EQ(env->result, expected);
@@ -163,10 +168,8 @@ TEST(BinaryTreeTest, PreOrderTraversal)
 // Tests the post-order traversal of the tree, i.e., left-right-root
 TEST(BinaryTreeTest, PostOrderTraversal)
 {
-  auto& local_env = *env;
-  local_env.result.clear();
-  auto local_lambda = [&local_env](const int& value) { local_env.getNodeValue(value); };
-  local_env.tree.postOrderTraversal(local_lambda);
+  env->result.clear();
+  env->tree.postOrderTraversal(env->getNodeValue);
 
   std::vector<int> expected = { 8, 10, 13, 12, 11, 15, 14, 23, 19, 25, 24, 32, 30, 27, 26, 17 };
   EXPECT_EQ(env->result, expected);
@@ -175,10 +178,8 @@ TEST(BinaryTreeTest, PostOrderTraversal)
 // Tests the level-order traversal of the tree, i.e., from top to bottom and from left to right
 TEST(BinaryTreeTest, LevelOrderTraversal)
 {
-  auto& local_env = *env;
-  local_env.result.clear();
-  auto local_lambda = [&local_env](const int& value) { local_env.getNodeValue(value); };
-  local_env.tree.levelOrderTraversal(local_lambda);
+  env->result.clear();
+  env->tree.levelOrderTraversal(env->getNodeValue);
 
   std::vector<int> expected = { 17, 14, 26, 11, 15, 24, 27, 10, 12, 19, 25, 30, 8, 13, 23, 32 };
   EXPECT_EQ(env->result, expected);
