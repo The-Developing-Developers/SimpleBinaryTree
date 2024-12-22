@@ -9,6 +9,7 @@
 #include "is_comparable.h" // custom type trait to check if a type is comparable
 #include "tree_node.h"
 #include <memory>
+#include <functional> // Used for traversal functions
 
 namespace ddlib
 {
@@ -44,6 +45,30 @@ public:
    **/
   void remove(const T &value);
 
+  /**
+   * @brief In-order traversal of the tree, i.e., left-root-right.
+   * @param visit_cbck Function to call for each node's value.
+   **/
+  void inOrderTraversal(const std::function<void(const T&)>& visit_cbck) const;
+
+  /**
+   * @brief Pre-order traversal of the tree, i.e., root-left-right.
+   * @param visit_cbck Function to call for each node's value.
+   **/
+  void preOrderTraversal(const std::function<void(const T&)>& visit_cbck) const;
+
+  /**
+   * @brief Post-order traversal of the tree, i.e., left-right-root.
+   * @param visit_cbck Function to call for each node's value.
+   **/
+  void postOrderTraversal(const std::function<void(const T&)>& visit_cbck) const;
+
+  /**
+   * @brief Level-order traversal of the tree, i.e., from top to bottom and from left to right.
+   * @param visit_cbck Function to call for each node's value.
+   **/
+  void levelOrderTraversal(const std::function<void(const T&)>& visit_cbck) const;
+
 private:
   std::unique_ptr<TreeNode<T>> m_root;
 
@@ -53,6 +78,10 @@ private:
   bool search_pvt(const std::unique_ptr<TreeNode<T>> &node, const T &value) const;
   std::unique_ptr<TreeNode<T>> remove_pvt(std::unique_ptr<TreeNode<T>> node, const T &value) const;
   const std::unique_ptr<TreeNode<T>>& findMin_pvt(const std::unique_ptr<TreeNode<T>>& node) const;
+
+  void inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const;
+  void preOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const;
+  void postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const;
 };
 
 } // namespace ddlib
