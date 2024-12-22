@@ -36,7 +36,7 @@ public:
    * @param value The value to search for.
    * @return `bool` `true` if the value is found, `false` otherwise.
    **/
-  bool search(const T &value);
+  bool search(const T &value) const;
 
   /**
    * @brief Removes a value from the tree.

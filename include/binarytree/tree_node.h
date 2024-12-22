@@ -29,12 +29,12 @@ struct TreeNode
   /**
    * @brief Pointer to the left child.
    **/
-  TreeNode* m_left  = nullptr;
+  std::unique_ptr<TreeNode> m_left  = nullptr;
 
   /**
    * @brief Pointer to the right child.
    **/
-  TreeNode* m_right = nullptr;
+  std::unique_ptr<TreeNode> m_right = nullptr;
 
   TreeNode(const T &value)
   : m_value(value)
