@@ -12,15 +12,28 @@ namespace ddlib
 {
 
 /**
- * @brief The `TreeNode` structure represents a node in a binary tree. It can contain a value of type `T` and pointers
- * to the left and right children (if any).\n
+ * @brief A node in a binary tree.
+ *
+ * This structure represents a node in a binary tree. It can contain a value of type `T` and pointers to the left and
+ * right children (if any). \n
  * The data members are public for simplicity. If they were private, we would need to provide getters and setters.
  **/
 template <typename T>
 struct TreeNode
 {
+  /**
+   * @brief The value stored in the node.
+   **/
   T m_value;
+
+  /**
+   * @brief Pointer to the left child.
+   **/
   std::unique_ptr<TreeNode> m_left  = nullptr;
+
+  /**
+   * @brief Pointer to the right child.
+   **/
   std::unique_ptr<TreeNode> m_right = nullptr;
 
   TreeNode(const T &value)

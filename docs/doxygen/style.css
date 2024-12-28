@@ -1,0 +1,4 @@
+#projectlogo img {
+  width: 200px; /* Desired width */
+  height: auto; /* Maintain aspect ratio */
+}
