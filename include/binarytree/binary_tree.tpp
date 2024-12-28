@@ -99,7 +99,7 @@ std::unique_ptr<TreeNode<T>> BinaryTree<T>::remove_pvt(std::unique_ptr<TreeNode<
     if (node->m_left == nullptr && node->m_right == nullptr)
     {
       // Node has no children: since `node` is a `unique_ptr`, it will be automatically deleted
-      node = nullptr; // Calls the destructor of the node
+      node.reset(nullptr); // Calls the destructor of the node
     }
     else if (node->m_left == nullptr)
     {
