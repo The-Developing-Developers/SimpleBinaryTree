@@ -15,7 +15,7 @@
  * `std::true_type`, indicating that the type `T` is comparable.
  *
  * The helper variable template `is_comparable_v` is created for easier usage. It evaluates to `true` if `T` is
- * comparable and `false` otherwise.
+ * comparable, and `false` otherwise.
  **/
 
 #ifndef IS_COMPARABLE_H
@@ -26,15 +26,25 @@
 namespace ddlib
 {
 
-// Custom type trait to check if `T` is comparable using the `<` operator
+/**
+ * @brief Custom type trait to check if `T` is comparable using the `<` operator
+ * @tparam `T` The type to check
+ * @tparam `typename` SFINAE parameter
+ **/
 template <typename T, typename = void>
 struct is_comparable : std::false_type {};
 
-// Specialization of `is_comparable` for types that support the `<` operator
+/**
+ * @brief Specialization of `is_comparable` for types that support the `<` operator
+ * @tparam `T` The type to check
+ **/
 template <typename T>
 struct is_comparable<T, std::void_t<decltype(std::declval<T>() < std::declval<T>())>> : std::true_type {};
 
-// Helper variable template for easier usage
+/**
+ * @brief Helper variable template for easier usage
+ * @tparam `T` The type to check
+ **/
 template <typename T>
 inline constexpr bool is_comparable_v = is_comparable<T>::value;
 
