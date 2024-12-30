@@ -9,20 +9,9 @@
 #include "tree_node.h"
 #include <memory>
 #include <functional> // Used for traversal functions
-#include <concepts>
 
 namespace ddlib
 {
-
-/**
- * @brief Concept to check if a type is comparable using the `<`, and `>` operators.
- **/
-template <typename T>
-concept Comparable = requires(T a, T b)
-{
-  { a < b } -> std::convertible_to<bool>;
-  { a > b } -> std::convertible_to<bool>;
-};
 
 /**
  * @brief A simple binary tree implementation.

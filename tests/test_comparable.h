@@ -7,8 +7,8 @@
  * operators.
  **/
 
-#ifndef COMPARABLE_H
-#define COMPARABLE_H
+#ifndef TEST_COMPARABLE_H
+#define TEST_COMPARABLE_H
 
 /**
  * @brief Used to demonstrate the usage of the `BinaryTree` class with a comparable type.
@@ -30,4 +30,4 @@ private:
  *  **/
 class NotComparableType {};
 
-#endif // COMPARABLE_H
+#endif // TEST_COMPARABLE_H

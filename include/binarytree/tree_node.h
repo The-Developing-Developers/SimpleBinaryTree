@@ -6,6 +6,7 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
+#include "concepts/comparable.h"
 #include <memory>
 
 namespace ddlib
@@ -18,7 +19,7 @@ namespace ddlib
  * right children (if any). \n
  * The data members are public for simplicity. If they were private, we would need to provide getters and setters.
  **/
-template <typename T>
+template <Comparable T>
 struct TreeNode
 {
   /**

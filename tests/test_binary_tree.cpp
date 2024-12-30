@@ -4,7 +4,7 @@
  **/
 
 #include "binary_tree.h"
-#include "comparable.h"
+#include "comparable_test.h"
 #include <gtest/gtest.h>
 #include <vector>
 #include <string>
