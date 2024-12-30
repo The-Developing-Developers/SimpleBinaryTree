@@ -3,7 +3,8 @@
  * @brief Header file for the `ComparableType` and `NotComparableType` classes.\n
  *
  * These classes are used in the tests to demonstrate the usage of the `BinaryTree` class with a comparable and
- * non-comparable type.
+ * non-comparable type. Type `T` used in Simple Binary Tree must be comparable, i.e., it must implement the `<` and `>`
+ * operators.
  **/
 
 #ifndef COMPARABLE_H
@@ -17,6 +18,7 @@ class ComparableType
 public:
   ComparableType(int value) : m_value(value) {}
   bool  operator<(const ComparableType& other) const { return m_value <  other.m_value; }
+  bool  operator>(const ComparableType& other) const { return m_value >  other.m_value; }
   bool operator==(const ComparableType& other) const { return m_value == other.m_value; } // Only used for testing purposes by Google Test
 
 private:
