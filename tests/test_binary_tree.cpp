@@ -4,7 +4,7 @@
  **/
 
 #include "binary_tree.h"
-#include "comparable.h"
+#include "t_comparable_type.h"
 #include <gtest/gtest.h>
 #include <vector>
 #include <string>
@@ -113,22 +113,22 @@ TEST(BinaryTreeTest, Remove)
 // Tests the insertion and search of a comparable type
 TEST(BinaryTreeTest, InsertAndSearchComparable)
 {
-  ddlib::BinaryTree<Comparable> tree;
-  tree.insert(Comparable(3));
-  tree.insert(Comparable(5));
-  tree.insert(Comparable(7));
+  ddlib::BinaryTree<TComparableType> tree;
+  tree.insert(TComparableType(3));
+  tree.insert(TComparableType(5));
+  tree.insert(TComparableType(7));
 
-  EXPECT_TRUE(tree.search(Comparable(3)));
-  EXPECT_TRUE(tree.search(Comparable(5)));
-  EXPECT_TRUE(tree.search(Comparable(7)));
-  EXPECT_FALSE(tree.search(Comparable(10)));
+  EXPECT_TRUE(tree.search(TComparableType(3)));
+  EXPECT_TRUE(tree.search(TComparableType(5)));
+  EXPECT_TRUE(tree.search(TComparableType(7)));
+  EXPECT_FALSE(tree.search(TComparableType(10)));
 }
 
 // Tests the insertion of a non-comparable type
 TEST(BinaryTreeTest, InsertNotComparable)
 {
   // // This will not compile: type must implement the < operator. Uncomment the following lines to see the compilation error.
-  // ddlib::BinaryTree<NotComparable> tree;
+  // ddlib::BinaryTree<TNotComparableType> tree;
 }
 
 // Same as above, but with comparable type `std::string`
