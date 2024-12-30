@@ -6,22 +6,30 @@
 #ifndef BINARYTREE_H
 #define BINARYTREE_H
 
-#include "is_comparable.h" // custom type trait to check if a type is comparable
 #include "tree_node.h"
 #include <memory>
 #include <functional> // Used for traversal functions
+#include <concepts>
 
 namespace ddlib
 {
 
 /**
+ * @brief Concept to check if a type is comparable using the `<` operator.
+ **/
+template <typename T>
+concept Comparable = requires(T a, T b)
+{
+  { a < b } -> std::convertible_to<bool>;
+};
+
+/**
  * @brief A simple binary tree implementation.
  * @tparam T The type of the values stored in the tree. It must support the `<` operator.
  **/
-template <typename T>
+template <Comparable T>
 class BinaryTree
 {
-  static_assert(is_comparable_v<T>, "Type T must be comparable using < operator");
 public:
    BinaryTree();
   ~BinaryTree();

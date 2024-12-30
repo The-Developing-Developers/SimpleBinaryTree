@@ -1,6 +1,6 @@
 /**
  * @file comparable.h
- * @brief Header file for the `Comparable` and `NotComparable` classes.\n
+ * @brief Header file for the `ComparableType` and `NotComparableType` classes.\n
  *
  * These classes are used in the tests to demonstrate the usage of the `BinaryTree` class with a comparable and
  * non-comparable type.
@@ -12,12 +12,12 @@
 /**
  * @brief Used to demonstrate the usage of the `BinaryTree` class with a comparable type.
  **/
-class Comparable
+class ComparableType
 {
 public:
-  Comparable(int value) : m_value(value) {}
-  bool  operator<(const Comparable& other) const { return m_value <  other.m_value; }
-  bool operator==(const Comparable& other) const { return m_value == other.m_value; } // Only used for testing purposes by Google Test
+  ComparableType(int value) : m_value(value) {}
+  bool  operator<(const ComparableType& other) const { return m_value <  other.m_value; }
+  bool operator==(const ComparableType& other) const { return m_value == other.m_value; } // Only used for testing purposes by Google Test
 
 private:
   int m_value;
@@ -26,6 +26,6 @@ private:
 /**
  * @brief Used to demonstrate the impossibility of using the `BinaryTree` class with a non-comparable type.
  *  **/
-class NotComparable {};
+class NotComparableType {};
 
 #endif // COMPARABLE_H

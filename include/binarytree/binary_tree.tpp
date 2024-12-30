@@ -8,21 +8,21 @@
 namespace ddlib
 {
 
-template <typename T>
+template <Comparable T>
 BinaryTree<T>::BinaryTree()
 {}
 
-template <typename T>
+template <Comparable T>
 BinaryTree<T>::~BinaryTree()
 {}
 
-template <typename T>
+template <Comparable T>
 void BinaryTree<T>::insert(const T &value)
 {
   insert_pvt(m_root, value);
 }
 
-template <typename T>
+template <Comparable T>
 void BinaryTree<T>::insert_pvt(std::unique_ptr<TreeNode<T>> &node, const T &value) const
 {
   if (node == nullptr)
@@ -39,7 +39,7 @@ void BinaryTree<T>::insert_pvt(std::unique_ptr<TreeNode<T>> &node, const T &valu
   }
 }
 
-template <typename T>
+template <Comparable T>
 bool BinaryTree<T>::search(const T &value) const
 {
   return search_pvt(m_root, value);
@@ -53,7 +53,7 @@ bool BinaryTree<T>::search(const T &value) const
  * @param value The value to search for
  * @return `bool` `true` if the value is found, `false` otherwise
  **/
-template <typename T>
+template <Comparable T>
 bool BinaryTree<T>::search_pvt(const std::unique_ptr<TreeNode<T>> &node, const T &value) const
 {
   if (node == nullptr)
@@ -74,7 +74,7 @@ bool BinaryTree<T>::search_pvt(const std::unique_ptr<TreeNode<T>> &node, const T
   }
 }
 
-template <typename T>
+template <Comparable T>
 void BinaryTree<T>::remove(const T &value)
 {
   m_root = remove_pvt(std::move(m_root), value);
@@ -88,7 +88,7 @@ void BinaryTree<T>::remove(const T &value)
  * @param value The value to remove
  * @return `std::unique_ptr<TreeNode<T>>` The new node after the removal
  **/
-template <typename T>
+template <Comparable T>
 std::unique_ptr<TreeNode<T>> BinaryTree<T>::remove_pvt(std::unique_ptr<TreeNode<T>> node, const T& value) const
 {
   if (node == nullptr)
@@ -140,7 +140,7 @@ std::unique_ptr<TreeNode<T>> BinaryTree<T>::remove_pvt(std::unique_ptr<TreeNode<
  * @param node the node to start the search from
  * @return `const std::unique_ptr<TreeNode<T>>&` reference to the minimum node in the tree
  **/
-template <typename T>
+template <Comparable T>
 const std::unique_ptr<TreeNode<T>>& BinaryTree<T>::findMin_pvt(const std::unique_ptr<TreeNode<T>>& node) const
 {
   const std::unique_ptr<TreeNode<T>>* current = &node; // Pointer to the current node. Used to traverse the tree
@@ -152,13 +152,13 @@ const std::unique_ptr<TreeNode<T>>& BinaryTree<T>::findMin_pvt(const std::unique
   return *current;
 }
 
-template <typename T>
+template <Comparable T>
 void BinaryTree<T>::inOrderTraversal(const std::function<void(const T&)>& visit_callback) const
 {
   inOrderTraversal_pvt(m_root, visit_callback);
 }
 
-template <typename T>
+template <Comparable T>
 void BinaryTree<T>::inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_callback) const
 {
   if (node != nullptr)
@@ -169,13 +169,13 @@ void BinaryTree<T>::inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& nod
   }
 }
 
-template <typename T>
+template <Comparable T>
 void BinaryTree<T>::preOrderTraversal(const std::function<void(const T&)>& visit_callback) const
 {
   preOrderTraversal_pvt(m_root, visit_callback);
 }
 
-template <typename T>
+template <Comparable T>
 void BinaryTree<T>::preOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_callback) const
 {
   if (node != nullptr)
@@ -186,13 +186,13 @@ void BinaryTree<T>::preOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& no
   }
 }
 
-template <typename T>
+template <Comparable T>
 void BinaryTree<T>::postOrderTraversal(const std::function<void(const T&)>& visit_callback) const
 {
   postOrderTraversal_pvt(m_root, visit_callback);
 }
 
-template <typename T>
+template <Comparable T>
 void BinaryTree<T>::postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_callback) const
 {
   if (node != nullptr)
@@ -203,7 +203,7 @@ void BinaryTree<T>::postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& n
   }
 }
 
-template <typename T>
+template <Comparable T>
 void BinaryTree<T>::levelOrderTraversal(const std::function<void(const T&)>& visit_callback) const
 {
   // Does not require a private helper method, because level-order traversal is inherently iterative and uses a queue to
