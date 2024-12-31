@@ -105,6 +105,12 @@ public:
      **/
     bool isValid() const;
 
+    /**
+     * @brief Check if the current node is a leaf node.
+     * @return `bool` `true` if the current node is a leaf node, `false` otherwise.
+     **/
+    bool isLeaf() const;
+
   private:
     TreeNode<T>* m_current;
   };

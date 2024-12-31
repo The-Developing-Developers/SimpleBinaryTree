@@ -308,4 +308,14 @@ bool BinaryTree<T>::Iterator::isValid() const
   return m_current != nullptr;
 }
 
+template <Comparable T>
+bool BinaryTree<T>::Iterator::isLeaf() const
+{
+  if (m_current)
+  {
+    return !m_current->m_left && !m_current->m_right;
+  }
+  throw std::runtime_error("Iterator is not at a valid node");
+}
+
 } // namespace ddlib

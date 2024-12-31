@@ -286,6 +286,31 @@ TEST(BinaryTreeIteratorTest, SetValue)
   EXPECT_EQ(it.getValue(), 100);
 }
 
+// Tests if the current node is a leaf node
+TEST(BinaryTreeIteratorTest, IsLeaf)
+{
+  auto it = env->tree.getIterator();
+  EXPECT_FALSE(it.isLeaf()); // Root node is not a leaf
+  it.moveToLeftChild();
+  EXPECT_FALSE(it.isLeaf()); // Node 14 is not a leaf
+  it.moveToLeftChild();
+  EXPECT_FALSE(it.isLeaf()); // Node 11 is not a leaf
+  it.moveToLeftChild();
+  EXPECT_FALSE(it.isLeaf()); // Node 10 is not a leaf
+  it.moveToLeftChild();
+  EXPECT_TRUE(it.isLeaf()); // Node 8 is a leaf
+
+  it = env->tree.getIterator(); // Reset the iterator to the root node
+  it.moveToRightChild();
+  EXPECT_FALSE(it.isLeaf()); // Node 26 is not a leaf
+  it.moveToRightChild();
+  EXPECT_FALSE(it.isLeaf()); // Node 27 is not a leaf
+  it.moveToRightChild();
+  EXPECT_FALSE(it.isLeaf()); // Node 30 is a leaf
+  it.moveToRightChild();
+  EXPECT_TRUE(it.isLeaf()); // Node 32 is a leaf
+}
+
 // // Defining a `main` function in the test source file is optional for the Google Test framework, because it provides
 // a default one that can be linked in CMakeLists.txt. A custom `main` function can be defined to run the tests in a
 // specific order or to perform additional setup or teardown operations.
