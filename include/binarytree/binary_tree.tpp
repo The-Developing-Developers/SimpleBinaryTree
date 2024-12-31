@@ -8,6 +8,8 @@
 namespace ddlib
 {
 
+// ---- Constructor(s) and Destructor ---- //
+
 template <Comparable T>
 BinaryTree<T>::BinaryTree()
 {}
@@ -16,12 +18,35 @@ template <Comparable T>
 BinaryTree<T>::~BinaryTree()
 {}
 
+// ---- Public Methods ---- //
+
 template <Comparable T>
 void BinaryTree<T>::insert(const T &value)
 {
   insert_pvt(m_root, value);
 }
 
+template <Comparable T>
+void BinaryTree<T>::remove(const T &value)
+{
+  m_root = remove_pvt(std::move(m_root), value);
+}
+
+template <Comparable T>
+bool BinaryTree<T>::search(const T &value) const
+{
+  return search_pvt(m_root, value);
+}
+
+// ---- Private Helper Methods ---- //
+
+/**
+ * @brief Insert a value into the tree.
+ * Receives a reference to a `unique_ptr` because the node is modified during the insertion.
+ *
+ * @param node The node to start the insertion from
+ * @param value The value to insert
+ **/
 template <Comparable T>
 void BinaryTree<T>::insert_pvt(std::unique_ptr<TreeNode<T>> &node, const T &value) const
 {
@@ -37,12 +62,6 @@ void BinaryTree<T>::insert_pvt(std::unique_ptr<TreeNode<T>> &node, const T &valu
   {
     insert_pvt(node->m_right, value);
   }
-}
-
-template <Comparable T>
-bool BinaryTree<T>::search(const T &value) const
-{
-  return search_pvt(m_root, value);
 }
 
 /**
@@ -72,12 +91,6 @@ bool BinaryTree<T>::search_pvt(const std::unique_ptr<TreeNode<T>> &node, const T
   {
     return search_pvt(node->m_right, value);
   }
-}
-
-template <Comparable T>
-void BinaryTree<T>::remove(const T &value)
-{
-  m_root = remove_pvt(std::move(m_root), value);
 }
 
 /**
@@ -151,6 +164,8 @@ const std::unique_ptr<TreeNode<T>>& BinaryTree<T>::findMin_pvt(const std::unique
 
   return *current;
 }
+
+// ---- Traversal Methods ---- //
 
 template <Comparable T>
 void BinaryTree<T>::inOrderTraversal(const std::function<void(const T&)>& visit_callback) const
@@ -227,6 +242,57 @@ void BinaryTree<T>::levelOrderTraversal(const std::function<void(const T&)>& vis
     if (currentNode->m_right)
       nodeQueue.push(currentNode->m_right.get());
   }
+}
+
+// ---- Iterator Methods ---- //
+
+template <Comparable T>
+BinaryTree<T>::Iterator::Iterator(TreeNode<T>* root)
+  : m_current(root)
+{}
+
+template <Comparable T>
+typename BinaryTree<T>::Iterator BinaryTree<T>::getIterator() const
+{
+  return Iterator(m_root.get()); // Calls the constructor of the `Iterator` class
+}
+
+template <Comparable T>
+bool BinaryTree<T>::Iterator::moveToLeftChild()
+{
+  if (m_current && m_current->m_left) // Also check the current node is not null because dereferencing a null pointer is undefined behavior
+  {
+    m_current = m_current->m_left.get();
+    return true;
+  }
+  return false;
+}
+
+template <Comparable T>
+bool BinaryTree<T>::Iterator::moveToRightChild()
+{
+  if (m_current && m_current->m_right)
+  {
+    m_current = m_current->m_right.get();
+    return true;
+  }
+  return false;
+}
+
+template <Comparable T>
+const T& BinaryTree<T>::Iterator::getValue() const
+{
+  if (m_current)
+  {
+    return m_current->m_value;
+  }
+  throw std::runtime_error("Iterator is not at a valid node");
+}
+
+template <Comparable T>
+bool BinaryTree<T>::Iterator::isValid() const
+{
+  return m_current != nullptr;
 }
 
 } // namespace ddlib

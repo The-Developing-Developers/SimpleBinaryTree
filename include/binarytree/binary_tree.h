@@ -67,6 +67,48 @@ public:
    **/
   void levelOrderTraversal(const std::function<void(const T&)>& visit_cbck) const;
 
+  /**
+   * @brief Iterator class for traversing the binary tree.
+   **/
+  class Iterator
+  {
+  public:
+    Iterator(TreeNode<T>* root);
+
+    /**
+     * @brief Move to the left child of the current node.
+     * @return `bool` `true` if the left child exists and the iterator moved, `false` otherwise.
+     **/
+    bool moveToLeftChild();
+
+    /**
+     * @brief Move to the right child of the current node.
+     * @return `bool` `true` if the right child exists and the iterator moved, `false` otherwise.
+     **/
+    bool moveToRightChild();
+
+    /**
+     * @brief Get the value of the current node.
+     * @return `const T&` The value of the current node.
+     **/
+    const T& getValue() const;
+
+    /**
+     * @brief Check if the iterator is at a valid node.
+     * @return `bool` `true` if the iterator is at a valid node, `false` otherwise.
+     **/
+    bool isValid() const;
+
+  private:
+    TreeNode<T>* m_current;
+  };
+
+  /**
+   * @brief Get an iterator for the binary tree, always starting at the root node.
+   * @return `Iterator` An iterator for the binary tree.
+   **/
+  Iterator getIterator() const;
+
 private:
   std::unique_ptr<TreeNode<T>> m_root;
 

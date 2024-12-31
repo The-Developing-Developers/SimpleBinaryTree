@@ -185,6 +185,82 @@ TEST(BinaryTreeTest, LevelOrderTraversal)
   EXPECT_EQ(env->result, expected);
 }
 
+// -- Test Iterator -- //
+
+// Creates an iterator on the root node, and checks if it is valid
+TEST(BinaryTreeIteratorTest, IteratorInitialization)
+{
+  auto it = env->tree.getIterator();
+  EXPECT_TRUE(it.isValid());
+  EXPECT_EQ(it.getValue(), 17);
+}
+
+// Tests the movement of the iterator to the left child
+TEST(BinaryTreeIteratorTest, MoveToLeftChild)
+{
+  auto it = env->tree.getIterator();
+  EXPECT_TRUE(it.moveToLeftChild());
+  EXPECT_EQ(it.getValue(), 14);
+  EXPECT_TRUE(it.moveToLeftChild());
+  EXPECT_EQ(it.getValue(), 11);
+  EXPECT_TRUE(it.moveToLeftChild());
+  EXPECT_EQ(it.getValue(), 10);
+  EXPECT_TRUE(it.moveToLeftChild());
+  EXPECT_EQ(it.getValue(), 8);
+  EXPECT_FALSE(it.moveToLeftChild());
+}
+
+// Tests the movement of the iterator to the right child
+TEST(BinaryTreeIteratorTest, MoveToRightChild)
+{
+  auto it = env->tree.getIterator();
+  EXPECT_TRUE(it.moveToRightChild());
+  EXPECT_EQ(it.getValue(), 26);
+  EXPECT_TRUE(it.moveToRightChild());
+  EXPECT_EQ(it.getValue(), 27);
+  EXPECT_TRUE(it.moveToRightChild());
+  EXPECT_EQ(it.getValue(), 30);
+  EXPECT_TRUE(it.moveToRightChild());
+  EXPECT_EQ(it.getValue(), 32);
+  EXPECT_FALSE(it.moveToRightChild());
+}
+
+// Tests the validity of the iterator after moving it around
+TEST(BinaryTreeIteratorTest, IteratorValidity)
+{
+  auto it_1 = env->tree.getIterator();
+  EXPECT_TRUE(it_1.isValid());
+  it_1.moveToLeftChild();
+  it_1.moveToLeftChild();
+  it_1.moveToRightChild();
+  it_1.moveToRightChild();
+  EXPECT_EQ(it_1.getValue(), 13);
+  EXPECT_FALSE(it_1.moveToLeftChild());
+  EXPECT_EQ(it_1.getValue(), 13);
+  EXPECT_TRUE(it_1.isValid());
+
+  auto it_2 = env->tree.getIterator();
+  EXPECT_EQ(it_2.getValue(), 17);
+  it_2.moveToRightChild();
+  EXPECT_EQ(it_2.getValue(), 26);
+  it_2.moveToLeftChild();
+  EXPECT_EQ(it_2.getValue(), 24);
+  it_2.moveToRightChild();
+  EXPECT_EQ(it_2.getValue(), 25);
+  EXPECT_FALSE(it_2.moveToRightChild());
+  EXPECT_EQ(it_2.getValue(), 25);
+  EXPECT_TRUE(it_2.isValid());
+
+  auto it_3 = env->tree.getIterator();
+  EXPECT_EQ(it_3.getValue(), 17);
+  it_3.moveToLeftChild();
+  EXPECT_EQ(it_3.getValue(), 14);
+  it_3.moveToRightChild();
+  EXPECT_EQ(it_3.getValue(), 15);
+  EXPECT_FALSE(it_3.moveToLeftChild());
+  EXPECT_TRUE(it_3.isValid());
+}
+
 // // Defining a `main` function in the test source file is optional for the Google Test framework, because it provides
 // a default one that can be linked in CMakeLists.txt. A custom `main` function can be defined to run the tests in a
 // specific order or to perform additional setup or teardown operations.
