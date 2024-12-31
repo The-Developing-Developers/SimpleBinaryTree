@@ -15,7 +15,7 @@ namespace ddlib
 
 /**
  * @brief A simple binary tree implementation.
- * @tparam T The type of the values stored in the tree. It must support the `<` operator.
+ * @tparam T The type of the values stored in the tree. It must support the `<` and `>` operators.
  **/
 template <Comparable T>
 class BinaryTree
@@ -92,6 +92,12 @@ public:
      * @return `const T&` The value of the current node.
      **/
     const T& getValue() const;
+
+    /**
+     * @brief Set the value of the current node.
+     * @param value The new value to set.
+     **/
+    void setValue(const T& value);
 
     /**
      * @brief Check if the iterator is at a valid node.

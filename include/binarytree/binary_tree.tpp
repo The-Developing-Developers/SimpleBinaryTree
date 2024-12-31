@@ -290,6 +290,19 @@ const T& BinaryTree<T>::Iterator::getValue() const
 }
 
 template <Comparable T>
+void BinaryTree<T>::Iterator::setValue(const T& value)
+{
+  if (m_current)
+  {
+    m_current->m_value = value;
+  }
+  else
+  {
+    throw std::runtime_error("Iterator is not at a valid node");
+  }
+}
+
+template <Comparable T>
 bool BinaryTree<T>::Iterator::isValid() const
 {
   return m_current != nullptr;

@@ -261,6 +261,31 @@ TEST(BinaryTreeIteratorTest, IteratorValidity)
   EXPECT_TRUE(it_3.isValid());
 }
 
+// Tests the value of the nodes after moving the iterator around and setting new values
+TEST(BinaryTreeIteratorTest, SetValue)
+{
+  auto it = env->tree.getIterator();
+  EXPECT_EQ(it.getValue(), 17);
+
+  it.setValue(42);
+  EXPECT_NE(it.getValue(), 17);
+  EXPECT_EQ(it.getValue(), 42);
+
+  it.moveToLeftChild();
+  EXPECT_EQ(it.getValue(), 14);
+
+  it.setValue(99);
+  EXPECT_NE(it.getValue(), 14);
+  EXPECT_EQ(it.getValue(), 99);
+
+  it.moveToRightChild();
+  EXPECT_EQ(it.getValue(), 15);
+
+  it.setValue(100);
+  EXPECT_NE(it.getValue(), 15);
+  EXPECT_EQ(it.getValue(), 100);
+}
+
 // // Defining a `main` function in the test source file is optional for the Google Test framework, because it provides
 // a default one that can be linked in CMakeLists.txt. A custom `main` function can be defined to run the tests in a
 // specific order or to perform additional setup or teardown operations.
