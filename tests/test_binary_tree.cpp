@@ -311,6 +311,46 @@ TEST(BinaryTreeIteratorTest, IsLeaf)
   EXPECT_TRUE(it.isLeaf()); // Node 32 is a leaf
 }
 
+// Tests the creation of children for a leaf node
+TEST(BinaryTreeIteratorTest, CreateChildren)
+{
+  auto it = env->tree.getIterator();
+  it.moveToLeftChild(); // Move to node 14
+  EXPECT_FALSE(it.isLeaf()); // Node 14 is not a leaf
+  EXPECT_FALSE(it.createChildren(5, 9)); // Cannot create children for node 14, because it is not a leaf
+  EXPECT_FALSE(env->tree.search(5)); // Value 5 must not be in the tree
+  EXPECT_FALSE(env->tree.search(9)); // Value 9 must not be in the tree
+  it.moveToLeftChild(); // Move to node 11
+  it.moveToLeftChild(); // Move to node 10
+  it.moveToLeftChild(); // Move to node 8 (leaf node)
+  EXPECT_TRUE(it.isLeaf()); // Node 8 is a leaf
+  EXPECT_TRUE(it.createChildren(5, 9)); // Create children for node 8
+  EXPECT_FALSE(it.isLeaf()); // Node 8 is no longer a leaf
+  it.moveToLeftChild();
+  EXPECT_EQ(it.getValue(), 5); // Check left child value
+
+  it = env->tree.getIterator(); // Restart from the root node
+  it.moveToLeftChild(); // Move to node 14
+  it.moveToLeftChild(); // Move to node 11
+  it.moveToLeftChild(); // Move to node 10
+  it.moveToLeftChild(); // Move to node 8
+  it.moveToRightChild(); // Move to node 9
+  EXPECT_EQ(it.getValue(), 9); // Check right child value
+
+  // Check if the children were created
+  EXPECT_TRUE(env->tree.search(5));
+  EXPECT_TRUE(env->tree.search(9));
+
+  // Remove children
+  env->tree.remove(5);
+  env->tree.remove(9);
+  EXPECT_TRUE(it.isLeaf()); // Node 8 is a leaf again
+
+  // Check if the children were removed
+  EXPECT_FALSE(env->tree.search(5));
+  EXPECT_FALSE(env->tree.search(9));
+}
+
 // // Defining a `main` function in the test source file is optional for the Google Test framework, because it provides
 // a default one that can be linked in CMakeLists.txt. A custom `main` function can be defined to run the tests in a
 // specific order or to perform additional setup or teardown operations.

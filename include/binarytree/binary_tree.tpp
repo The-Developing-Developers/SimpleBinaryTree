@@ -318,4 +318,17 @@ bool BinaryTree<T>::Iterator::isLeaf() const
   throw std::runtime_error("Iterator is not at a valid node");
 }
 
+template <Comparable T>
+bool BinaryTree<T>::Iterator::createChildren(const T &leftValue, const T &rightValue)
+{
+  if (m_current && !m_current->m_left && !m_current->m_right)
+  {
+    m_current->m_left  = std::make_unique<TreeNode<T>>(leftValue);
+    m_current->m_right = std::make_unique<TreeNode<T>>(rightValue);
+    return true;
+  }
+
+  return false;
+}
+
 } // namespace ddlib

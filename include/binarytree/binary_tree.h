@@ -111,6 +111,14 @@ public:
      **/
     bool isLeaf() const;
 
+    /**
+     * @brief Create left and right children for the current node.
+     * @param leftValue The value for the left child.
+     * @param rightValue The value for the right child.
+     * @return `bool` `true` if the children were successfully created, `false` otherwise.
+     **/
+    bool createChildren(const T& leftValue, const T& rightValue);
+
   private:
     TreeNode<T>* m_current;
   };
