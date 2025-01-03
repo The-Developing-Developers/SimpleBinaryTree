@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 #include <string>
+#include <fstream> // Used for serialisation / deserialisation
 
 // -- Test Environment -- //
 
@@ -411,6 +412,62 @@ TEST(BinaryTreeIteratorTest, CreateChildrenAndMoveValue)
   std::vector<int> expected = { 17, 14, 26, 11, 15, 24, 27, 10, 12, 19, 25, 30, 8, 13, 23, 32 };
   EXPECT_EQ(env->result, expected);
 }
+
+// -- Test Serialisation and Deserialisation -- //
+
+TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialise)
+{
+  ddlib::BinaryTree<int> tree;
+  tree.insert(17);
+  tree.insert(14);
+  tree.insert(26);
+  tree.insert(11);
+  tree.insert(15);
+  tree.insert(24);
+  tree.insert(27);
+
+  // Serialise the tree to a file
+  std::string filename = "tree_serialised.dat";
+  tree.serialise(filename);
+
+  // Create a new tree and deserialise from the file
+  ddlib::BinaryTree<int> new_tree;
+  new_tree.deserialise(filename);
+
+  // Check if the new tree has the same structure and values
+  std::vector<int> original_result;
+  std::vector<int> new_result;
+
+  tree.levelOrderTraversal([&original_result](const int& value) { original_result.push_back(value); });
+  new_tree.levelOrderTraversal([&new_result](const int& value) { new_result.push_back(value); });
+
+  EXPECT_EQ(original_result, new_result);
+
+  // Clean up the serialised file
+  std::remove(filename.c_str());
+}
+
+TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialiseEmptyTree)
+{
+  ddlib::BinaryTree<int> tree;
+
+  // Serialise the empty tree to a file
+  std::string filename = "empty_tree_serialised.dat";
+  tree.serialise(filename);
+
+  // Create a new tree and deserialise from the file
+  ddlib::BinaryTree<int> new_tree;
+  new_tree.deserialise(filename);
+
+  // Check if the new tree is empty
+  EXPECT_FALSE(new_tree.search(0)); // Should not find any value
+  EXPECT_FALSE(new_tree.search(1));
+  EXPECT_TRUE(new_tree.isEmpty()); // Should be empty
+
+  // Clean up the serialised file
+  std::remove(filename.c_str());
+}
+
 
 // // Defining a `main` function in the test source file is optional for the Google Test framework, because it provides
 // a default one that can be linked in CMakeLists.txt. A custom `main` function can be defined to run the tests in a

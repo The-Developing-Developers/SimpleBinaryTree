@@ -44,6 +44,12 @@ public:
   void remove(const T &value);
 
   /**
+   * @brief Check if the tree is empty.
+   * @return `bool` `true` if the tree is empty, `false` otherwise.
+   **/
+  bool isEmpty() const;
+
+  /**
    * @brief In-order traversal of the tree, i.e., left-root-right.
    * @param visit_cbck Function to call for each node's value.
    **/
@@ -66,6 +72,19 @@ public:
    * @param visit_cbck Function to call for each node's value.
    **/
   void levelOrderTraversal(const std::function<void(const T&)>& visit_cbck) const;
+
+
+  /**
+   * @brief Serialises the binary tree to a file.
+   * @param filename The name of the file to serialise the tree to.
+   **/
+  void serialise(const std::string& filename) const;
+
+  /**
+   * @brief Deserialises the binary tree from a file.
+   * @param filename The name of the file to deserialise the tree from.
+   **/
+  void deserialise(const std::string& filename);
 
   /**
    * @brief Iterator class for traversing the binary tree.
@@ -142,6 +161,10 @@ private:
   void inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const;
   void preOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const;
   void postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const;
+
+  void serialise_pvt(std::ofstream& out, const std::unique_ptr<TreeNode<T>>& node) const;
+  std::unique_ptr<TreeNode<T>> deserialise_pvt(std::ifstream& in);
+
 };
 
 } // namespace ddlib
