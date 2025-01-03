@@ -164,7 +164,6 @@ private:
 
   void serialise_pvt(std::ofstream& out, const std::unique_ptr<TreeNode<T>>& node) const;
   std::unique_ptr<TreeNode<T>> deserialise_pvt(std::ifstream& in);
-
 };
 
 } // namespace ddlib

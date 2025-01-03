@@ -447,6 +447,35 @@ TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialise)
   std::remove(filename.c_str());
 }
 
+TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialiseStrings)
+{
+  ddlib::BinaryTree<std::string> tree;
+  tree.insert("hello");
+  tree.insert("world");
+  tree.insert("foo");
+  tree.insert("bar");
+
+  // Serialise the tree to a file
+  std::string filename = "tree_serialised_strings.dat";
+  tree.serialise(filename);
+
+  // Create a new tree and deserialise from the file
+  ddlib::BinaryTree<std::string> new_tree;
+  new_tree.deserialise(filename);
+
+  // Check if the new tree has the same structure and values
+  std::vector<std::string> original_result;
+  std::vector<std::string> new_result;
+
+  tree.levelOrderTraversal([&original_result](const std::string& value) { original_result.push_back(value); });
+  new_tree.levelOrderTraversal([&new_result](const std::string& value) { new_result.push_back(value); });
+
+  EXPECT_EQ(original_result, new_result);
+
+  // Clean up the serialised file
+  std::remove(filename.c_str());
+}
+
 TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialiseEmptyTree)
 {
   ddlib::BinaryTree<int> tree;
