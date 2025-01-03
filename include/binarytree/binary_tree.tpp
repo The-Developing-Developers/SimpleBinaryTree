@@ -96,7 +96,7 @@ void BinaryTree<T>::levelOrderTraversal(const std::function<void(const T&)>& vis
 template <Comparable T>
 void BinaryTree<T>::serialise(const std::string& filename) const
 {
-  std::ofstream out(filename, std::ios::binary);
+  std::ofstream out(filename);
   if (!out)
   {
     throw std::runtime_error("Could not open file for writing");
@@ -107,7 +107,7 @@ void BinaryTree<T>::serialise(const std::string& filename) const
 template <Comparable T>
 void BinaryTree<T>::deserialise(const std::string& filename)
 {
-  std::ifstream in(filename, std::ios::binary);
+  std::ifstream in(filename);
   if (!in)
   {
     throw std::runtime_error("Could not open file for reading");
@@ -257,73 +257,29 @@ void BinaryTree<T>::serialise_pvt(std::ofstream& out, const std::unique_ptr<Tree
   if (node)
   {
     // The order of serialisation is: value, left child, right child, i.e., pre-order traversal
-    bool is_null = false;
-    out.write(reinterpret_cast<const char*>(&is_null), sizeof(is_null)); // Write a flag indicating the node is not null
-    out.write(reinterpret_cast<const char*>(&node->m_value), sizeof(T)); // Write the value of the node as binary data
+    out << "0 " << node->m_value << "\n"; // Write a flag indicating the node is not null, followed by the value
     serialise_pvt(out, node->m_left);
     serialise_pvt(out, node->m_right);
   }
   else
   {
     // Write a null marker to indicate the end of a branch (leaf node)
-    bool is_null = true;
-    out.write(reinterpret_cast<const char*>(&is_null), sizeof(is_null)); // Write a flag indicating the node is null
-  }
-}
-
-// Specialisation for std::string to handle serialisation and deserialisation correctly
-template <>
-void BinaryTree<std::string>::serialise_pvt(std::ofstream& out, const std::unique_ptr<TreeNode<std::string>>& node) const
-{
-  if (node)
-  {
-    bool is_null = false;
-    out.write(reinterpret_cast<const char*>(&is_null), sizeof(is_null)); // Write a flag indicating the node is not null
-    size_t length = node->m_value.size();
-    out.write(reinterpret_cast<const char*>(&length), sizeof(length)); // Write the length of the string
-    out.write(node->m_value.data(), length); // Write the string data
-    serialise_pvt(out, node->m_left);
-    serialise_pvt(out, node->m_right);
-  }
-  else
-  {
-    bool is_null = true;
-    out.write(reinterpret_cast<const char*>(&is_null), sizeof(is_null)); // Write a flag indicating the node is null
+    out << "1\n"; // Write a flag indicating the node is null
   }
 }
 
 template <Comparable T>
 std::unique_ptr<TreeNode<T>> BinaryTree<T>::deserialise_pvt(std::ifstream& in)
 {
-  bool is_null;
-  in.read(reinterpret_cast<char*>(&is_null), sizeof(is_null));
+  int is_null;
+  in >> is_null;
   if (in.eof() || is_null)
   {
     return nullptr;
   }
   T value;
-  in.read(reinterpret_cast<char*>(&value), sizeof(T));
+  in >> value;
   auto node = std::make_unique<TreeNode<T>>(value);
-  node->m_left  = deserialise_pvt(in);
-  node->m_right = deserialise_pvt(in);
-  return node;
-}
-
-// Specialisation for std::string to handle serialisation and deserialisation correctly
-template <>
-std::unique_ptr<TreeNode<std::string>> BinaryTree<std::string>::deserialise_pvt(std::ifstream& in)
-{
-  bool is_null;
-  in.read(reinterpret_cast<char*>(&is_null), sizeof(is_null));
-  if (in.eof() || is_null)
-  {
-    return nullptr;
-  }
-  size_t length;
-  in.read(reinterpret_cast<char*>(&length), sizeof(length));
-  std::string value(length, '\0');
-  in.read(&value[0], length);
-  auto node = std::make_unique<TreeNode<std::string>>(value);
   node->m_left = deserialise_pvt(in);
   node->m_right = deserialise_pvt(in);
   return node;

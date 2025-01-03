@@ -463,6 +463,12 @@ TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialiseStrings)
   ddlib::BinaryTree<std::string> new_tree;
   new_tree.deserialise(filename);
 
+  // Find the values in the new tree
+  EXPECT_TRUE(new_tree.search("hello"));
+  EXPECT_TRUE(new_tree.search("world"));
+  EXPECT_TRUE(new_tree.search("foo"));
+  EXPECT_TRUE(new_tree.search("bar"));
+
   // Check if the new tree has the same structure and values
   std::vector<std::string> original_result;
   std::vector<std::string> new_result;
