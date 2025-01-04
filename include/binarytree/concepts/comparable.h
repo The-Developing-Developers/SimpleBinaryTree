@@ -13,6 +13,9 @@ namespace ddlib
 
 /**
  * @brief Concept to check if a type is comparable using the `<`, and `>` operators.
+ *
+ * This concept is required in the binary tree implementation to ensure that the type `T` used in the tree is
+ * comparable, because the tree relies on comparisons to insert, search, and remove nodes.
  **/
 template <typename T>
 concept Comparable = requires(T a, T b)
