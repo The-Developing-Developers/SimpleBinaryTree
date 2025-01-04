@@ -9,6 +9,8 @@ add_library(${PROJECT_NAME} INTERFACE)
 # added to its include path.
 target_include_directories(${PROJECT_NAME} INTERFACE
   ${CMAKE_CURRENT_SOURCE_DIR}/include/binarytree
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/binarytree
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/binarytree/tree_helpers
 )
 
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20) # Specify the C++ standard for the target

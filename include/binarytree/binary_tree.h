@@ -6,8 +6,8 @@
 #ifndef BINARYTREE_H
 #define BINARYTREE_H
 
-#include "tree_node.h"
-#include "tree_iterator.h"
+#include "tree_helpers/tree_node.h"
+#include "tree_helpers/tree_iterator.h"
 #include <memory>
 #include <functional> // Used for traversal functions
 
@@ -97,7 +97,7 @@ private:
 
   // ---- Helper methods ---- //
 
-  void insert_pvt(std::unique_ptr<TreeNode<T>>& node, const T &value) const;
+  void insert_pvt      (std::unique_ptr<TreeNode<T>>& node, const T &value) const;
   bool search_pvt(const std::unique_ptr<TreeNode<T>> &node, const T &value) const;
 
   std::unique_ptr<TreeNode<T>>         remove_pvt(std::unique_ptr<TreeNode<T>> node, const T &value) const;

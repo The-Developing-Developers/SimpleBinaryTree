@@ -13,6 +13,19 @@ namespace ddlib
 
 template <Comparable T> class BinaryTree; // Forward declaration
 
+/**
+ * @brief An iterator for the `BinaryTree` class.
+ *
+ * The iterator allows traversing the tree in a sequential manner, always starting from the root node.\n
+ * It can move to the left or right child of the current node, get the value of the current node, set the value of the
+ * current node, check if the iterator is at a valid node, check if the current node is a leaf node, and create left and
+ * right children for the current node. The latter operation is useful for the "Guess the Animal" game, where the user
+ * can add new animals to the tree.
+ *
+ * @tparam T The type of the values stored in the tree. It must support the `<` and `>` operators.
+ * @see BinaryTree
+ * @see TreeNode
+ **/
 template <Comparable T>
 class Iterator
 {
