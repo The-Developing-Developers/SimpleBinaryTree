@@ -158,12 +158,12 @@ private:
   std::unique_ptr<TreeNode<T>> remove_pvt(std::unique_ptr<TreeNode<T>> node, const T &value) const;
   const std::unique_ptr<TreeNode<T>>& findMin_pvt(const std::unique_ptr<TreeNode<T>>& node) const;
 
-  void inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const;
-  void preOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const;
+  void   inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const;
+  void  preOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const;
   void postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const;
 
-  void serialise_pvt(std::ofstream& out, const std::unique_ptr<TreeNode<T>>& node) const;
-  std::unique_ptr<TreeNode<T>> deserialise_pvt(std::ifstream& in);
+  void serialiseNode_pvt(std::ofstream& outFile, const std::unique_ptr<TreeNode<T>>& node) const;
+  std::unique_ptr<TreeNode<T>> deserialiseNode_pvt(std::istringstream& inStream);
 };
 
 } // namespace ddlib

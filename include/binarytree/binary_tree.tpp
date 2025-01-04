@@ -92,30 +92,6 @@ void BinaryTree<T>::levelOrderTraversal(const std::function<void(const T&)>& vis
   }
 }
 
-// ---- Public Serialisation Methods ---- //
-
-template <Comparable T>
-void BinaryTree<T>::serialise(const std::string& filename) const
-{
-  std::ofstream out(filename);
-  if (!out)
-  {
-    throw std::runtime_error("Could not open file for writing");
-  }
-  serialise_pvt(out, m_root);
-}
-
-template <Comparable T>
-void BinaryTree<T>::deserialise(const std::string& filename)
-{
-  std::ifstream in(filename);
-  if (!in)
-  {
-    throw std::runtime_error("Could not open file for reading");
-  }
-  m_root = deserialise_pvt(in);
-}
-
 // ---- Private Helper Methods ---- //
 
 /**
@@ -243,66 +219,6 @@ const std::unique_ptr<TreeNode<T>>& BinaryTree<T>::findMin_pvt(const std::unique
   return *current;
 }
 
-// --- Private Serialisation Methods --- //
-
-/**
- * @brief Serialise the binary tree to a file.
- * Receives a reference to an `ofstream` because the file stream is modified during the serialisation.
- * @param out The file stream to write the serialised tree to
- * @param node The node to start the serialisation from. Typically the root node
- * @return `void`
- **/
-template <Comparable T>
-void BinaryTree<T>::serialise_pvt(std::ofstream& out, const std::unique_ptr<TreeNode<T>>& node) const
-{
-  if (node)
-  {
-    // The order of serialisation is: value, left child, right child, i.e., pre-order traversal
-    out << "0 " << node->m_value << "\n"; // Write a flag indicating the node is not null, followed by the value
-    serialise_pvt(out, node->m_left);
-    serialise_pvt(out, node->m_right);
-  }
-  else
-  {
-    // Write a null marker to indicate the end of a branch (leaf node)
-    out << "1\n"; // Write a flag indicating the node is null
-  }
-}
-
-template <Comparable T>
-std::unique_ptr<TreeNode<T>> BinaryTree<T>::deserialise_pvt(std::ifstream& in)
-{
-  std::string line;
-  if (!std::getline(in, line))
-  {
-    return nullptr;
-  }
-
-  std::istringstream iss(line);
-  std::string is_null_str;
-  std::getline(iss, is_null_str, ' '); // Read from `iss` into `is_null_str` until a space is encountered
-  int is_null = std::stoi(is_null_str);
-  if (is_null)
-  {
-    return nullptr;
-  }
-
-  T value;
-  if constexpr (std::is_same_v<T, std::string>) // Check if the type is `std::string`
-  {
-    std::getline(iss, value); // Read the rest of the line as the value for std::string
-  }
-  else
-  {
-    iss >> value; // Read the value for primitive types
-  }
-
-  auto node = std::make_unique<TreeNode<T>>(value);
-  node->m_left  = deserialise_pvt(in);
-  node->m_right = deserialise_pvt(in);
-  return node;
-}
-
 // ---- Private Traversal Helper Methods ---- //
 
 template <Comparable T>
@@ -423,6 +339,70 @@ bool BinaryTree<T>::Iterator::createChildren(const T &leftValue, const T &rightV
   }
 
   return false;
+}
+
+// ---- Serialisation and Deserialisation Methods ---- //
+
+template <Comparable T>
+void BinaryTree<T>::serialise(const std::string& filename) const
+{
+  std::ofstream outFile(filename);
+  if (!outFile)
+    throw std::runtime_error("Cannot open file for writing");
+
+  serialiseNode_pvt(outFile, m_root);
+  outFile.close();
+}
+
+template <Comparable T>
+void BinaryTree<T>::deserialise(const std::string& filename)
+{
+  std::ifstream inFile(filename);
+  if (!inFile)
+    throw std::runtime_error("Cannot open file for reading");
+
+  std::stringstream buffer;
+  buffer << inFile.rdbuf(); // Read the file into a stringstream
+  std::string data = buffer.str(); // Extract the string from the stringstream
+  std::istringstream dataStream(data); // Create an input string stream from the string
+  m_root = deserialiseNode_pvt(dataStream);
+  inFile.close();
+}
+
+template <Comparable T>
+void BinaryTree<T>::serialiseNode_pvt(std::ofstream& outFile, const std::unique_ptr<TreeNode<T>>& node) const
+{
+  if (node)
+  {
+    outFile << node->m_value << " "; // Write the value of the node. Use a space to separate values. `m_value` can be either a primitive type or a `std::string`
+    serialiseNode_pvt(outFile, node->m_left);
+    serialiseNode_pvt(outFile, node->m_right);
+  }
+  else
+  {
+    outFile << "# "; // Use '#' to denote null nodes
+  }
+}
+
+template <Comparable T>
+std::unique_ptr<TreeNode<T>> BinaryTree<T>::deserialiseNode_pvt(std::istringstream& inStream)
+{
+  std::string value;
+  inStream >> value;
+
+  if (value == "#")
+  {
+    return nullptr;
+  }
+  else
+  {
+    T nodeValue; // `T` can be either a primitive type or a `std::string`
+    std::istringstream(value) >> nodeValue; // istringstream can parse the string into the desired type
+    auto node = std::make_unique<TreeNode<T>>(nodeValue);
+    node->m_left  = deserialiseNode_pvt(inStream);
+    node->m_right = deserialiseNode_pvt(inStream);
+    return node;
+  }
 }
 
 } // namespace ddlib

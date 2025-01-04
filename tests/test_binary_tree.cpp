@@ -456,7 +456,7 @@ TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialiseStrings)
   tree.insert("abc DEF 123 890");
 
   // Serialise the tree to a file
-  std::string filename = "tree_serialised_strings.txt";
+  std::string filename = "tree_serialised_strings.dat";
   tree.serialise(filename);
 
   // Create a new tree and deserialise from the file
@@ -479,7 +479,7 @@ TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialiseStrings)
   EXPECT_EQ(original_result, new_result);
 
   // Clean up the serialised file
-  // std::remove(filename.c_str());
+  std::remove(filename.c_str());
 }
 
 TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialiseEmptyTree)
