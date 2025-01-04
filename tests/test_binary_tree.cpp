@@ -452,11 +452,11 @@ TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialiseStrings)
   ddlib::BinaryTree<std::string> tree;
   tree.insert("hello");
   tree.insert("world");
-  tree.insert("foo");
-  tree.insert("bar");
+  tree.insert("foo bar");
+  tree.insert("abc DEF 123 890");
 
   // Serialise the tree to a file
-  std::string filename = "tree_serialised_strings.dat";
+  std::string filename = "tree_serialised_strings.txt";
   tree.serialise(filename);
 
   // Create a new tree and deserialise from the file
@@ -466,8 +466,8 @@ TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialiseStrings)
   // Find the values in the new tree
   EXPECT_TRUE(new_tree.search("hello"));
   EXPECT_TRUE(new_tree.search("world"));
-  EXPECT_TRUE(new_tree.search("foo"));
-  EXPECT_TRUE(new_tree.search("bar"));
+  EXPECT_TRUE(new_tree.search("foo bar"));
+  EXPECT_TRUE(new_tree.search("abc DEF 123 890"));
 
   // Check if the new tree has the same structure and values
   std::vector<std::string> original_result;
@@ -479,7 +479,7 @@ TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialiseStrings)
   EXPECT_EQ(original_result, new_result);
 
   // Clean up the serialised file
-  std::remove(filename.c_str());
+  // std::remove(filename.c_str());
 }
 
 TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialiseEmptyTree)

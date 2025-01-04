@@ -5,6 +5,7 @@
 
 #include <queue>   // Used for level-order traversal
 #include <fstream> // Used for serialisation / deserialisation
+#include <sstream> // Used for deserialisation
 
 namespace ddlib
 {
@@ -271,16 +272,33 @@ void BinaryTree<T>::serialise_pvt(std::ofstream& out, const std::unique_ptr<Tree
 template <Comparable T>
 std::unique_ptr<TreeNode<T>> BinaryTree<T>::deserialise_pvt(std::ifstream& in)
 {
-  int is_null;
-  in >> is_null;
-  if (in.eof() || is_null)
+  std::string line;
+  if (!std::getline(in, line))
   {
     return nullptr;
   }
+
+  std::istringstream iss(line);
+  std::string is_null_str;
+  std::getline(iss, is_null_str, ' '); // Read from `iss` into `is_null_str` until a space is encountered
+  int is_null = std::stoi(is_null_str);
+  if (is_null)
+  {
+    return nullptr;
+  }
+
   T value;
-  in >> value;
+  if constexpr (std::is_same_v<T, std::string>) // Check if the type is `std::string`
+  {
+    std::getline(iss, value); // Read the rest of the line as the value for std::string
+  }
+  else
+  {
+    iss >> value; // Read the value for primitive types
+  }
+
   auto node = std::make_unique<TreeNode<T>>(value);
-  node->m_left = deserialise_pvt(in);
+  node->m_left  = deserialise_pvt(in);
   node->m_right = deserialise_pvt(in);
   return node;
 }
