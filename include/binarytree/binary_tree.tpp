@@ -3,7 +3,8 @@
  * @brief Implementation file for the `BinaryTree` class.
  **/
 
-#include <queue> // Used for level-order traversal
+#include <queue>   // Used for level-order traversal
+#include <fstream> // Used for serialisation / deserialisation
 
 namespace ddlib
 {
@@ -33,9 +34,85 @@ void BinaryTree<T>::remove(const T &value)
 }
 
 template <Comparable T>
+bool BinaryTree<T>::isEmpty() const
+{
+  return m_root == nullptr;
+}
+
+template <Comparable T>
 bool BinaryTree<T>::search(const T &value) const
 {
   return search_pvt(m_root, value);
+}
+
+// ---- Public Traversal Methods ---- //
+
+template <Comparable T>
+void BinaryTree<T>::inOrderTraversal(const std::function<void(const T&)>& visit_callback) const
+{
+  inOrderTraversal_pvt(m_root, visit_callback);
+}
+
+template <Comparable T>
+void BinaryTree<T>::preOrderTraversal(const std::function<void(const T&)>& visit_callback) const
+{
+  preOrderTraversal_pvt(m_root, visit_callback);
+}
+
+template <Comparable T>
+void BinaryTree<T>::postOrderTraversal(const std::function<void(const T&)>& visit_callback) const
+{
+  postOrderTraversal_pvt(m_root, visit_callback);
+}
+
+template <Comparable T>
+void BinaryTree<T>::levelOrderTraversal(const std::function<void(const T&)>& visit_callback) const
+{
+  // Does not require a private helper method, because level-order traversal is inherently iterative and uses a queue to
+  // manage the nodes to be visited.
+
+  if (!m_root) return;
+
+  std::queue<const TreeNode<T>*> nodeQueue;
+  nodeQueue.push(m_root.get());
+
+  while (!nodeQueue.empty())
+  {
+    const TreeNode<T>* currentNode = nodeQueue.front(); // Get the front element
+    nodeQueue.pop(); // Remove the front element
+
+    visit_callback(currentNode->m_value);
+
+    if (currentNode->m_left)
+      nodeQueue.push(currentNode->m_left.get());
+
+    if (currentNode->m_right)
+      nodeQueue.push(currentNode->m_right.get());
+  }
+}
+
+// ---- Public Serialisation Methods ---- //
+
+template <Comparable T>
+void BinaryTree<T>::serialise(const std::string& filename) const
+{
+  std::ofstream out(filename, std::ios::binary);
+  if (!out)
+  {
+    throw std::runtime_error("Could not open file for writing");
+  }
+  serialise_pvt(out, m_root);
+}
+
+template <Comparable T>
+void BinaryTree<T>::deserialise(const std::string& filename)
+{
+  std::ifstream in(filename, std::ios::binary);
+  if (!in)
+  {
+    throw std::runtime_error("Could not open file for reading");
+  }
+  m_root = deserialise_pvt(in);
 }
 
 // ---- Private Helper Methods ---- //
@@ -165,13 +242,49 @@ const std::unique_ptr<TreeNode<T>>& BinaryTree<T>::findMin_pvt(const std::unique
   return *current;
 }
 
-// ---- Traversal Methods ---- //
+// --- Private Serialisation Methods --- //
+
+/**
+ * @brief Serialise the binary tree to a file.
+ * Receives a reference to an `ofstream` because the file stream is modified during the serialisation.
+ * @param out The file stream to write the serialised tree to
+ * @param node The node to start the serialisation from. Typically the root node
+ * @return `void`
+ **/
+template <Comparable T>
+void BinaryTree<T>::serialise_pvt(std::ofstream& out, const std::unique_ptr<TreeNode<T>>& node) const
+{
+  if (node)
+  {
+    // The order of serialisation is: value, left child, right child, i.e., pre-order traversal
+    out.write(reinterpret_cast<const char*>(&node->m_value), sizeof(T)); // Write the value of the node as binary data
+    serialise_pvt(out, node->m_left);
+    serialise_pvt(out, node->m_right);
+  }
+  else
+  {
+    // Write a null marker to indicate the end of a branch (leaf node)
+    T null_marker = T(); // Assuming T() is a valid marker for null
+    out.write(reinterpret_cast<const char*>(&null_marker), sizeof(T));
+  }
+}
 
 template <Comparable T>
-void BinaryTree<T>::inOrderTraversal(const std::function<void(const T&)>& visit_callback) const
+std::unique_ptr<TreeNode<T>> BinaryTree<T>::deserialise_pvt(std::ifstream& in)
 {
-  inOrderTraversal_pvt(m_root, visit_callback);
+  T value;
+  in.read(reinterpret_cast<char*>(&value), sizeof(T));
+  if (in.eof() || value == T()) // Assuming T() is a valid marker for null
+  {
+    return nullptr;
+  }
+  auto node = std::make_unique<TreeNode<T>>(value);
+  node->m_left = deserialise_pvt(in);
+  node->m_right = deserialise_pvt(in);
+  return node;
 }
+
+// ---- Private Traversal Helper Methods ---- //
 
 template <Comparable T>
 void BinaryTree<T>::inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_callback) const
@@ -182,12 +295,6 @@ void BinaryTree<T>::inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& nod
     visit_callback(node->m_value);
     inOrderTraversal_pvt(node->m_right, visit_callback);
   }
-}
-
-template <Comparable T>
-void BinaryTree<T>::preOrderTraversal(const std::function<void(const T&)>& visit_callback) const
-{
-  preOrderTraversal_pvt(m_root, visit_callback);
 }
 
 template <Comparable T>
@@ -202,12 +309,6 @@ void BinaryTree<T>::preOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& no
 }
 
 template <Comparable T>
-void BinaryTree<T>::postOrderTraversal(const std::function<void(const T&)>& visit_callback) const
-{
-  postOrderTraversal_pvt(m_root, visit_callback);
-}
-
-template <Comparable T>
 void BinaryTree<T>::postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_callback) const
 {
   if (node != nullptr)
@@ -218,33 +319,7 @@ void BinaryTree<T>::postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& n
   }
 }
 
-template <Comparable T>
-void BinaryTree<T>::levelOrderTraversal(const std::function<void(const T&)>& visit_callback) const
-{
-  // Does not require a private helper method, because level-order traversal is inherently iterative and uses a queue to
-  // manage the nodes to be visited.
-
-  if (!m_root) return;
-
-  std::queue<const TreeNode<T>*> nodeQueue;
-  nodeQueue.push(m_root.get());
-
-  while (!nodeQueue.empty())
-  {
-    const TreeNode<T>* currentNode = nodeQueue.front(); // Get the front element
-    nodeQueue.pop(); // Remove the front element
-
-    visit_callback(currentNode->m_value);
-
-    if (currentNode->m_left)
-      nodeQueue.push(currentNode->m_left.get());
-
-    if (currentNode->m_right)
-      nodeQueue.push(currentNode->m_right.get());
-  }
-}
-
-// ---- Iterator Methods ---- //
+// ---- Public Iterator Methods ---- //
 
 template <Comparable T>
 BinaryTree<T>::Iterator::Iterator(TreeNode<T>* root)
