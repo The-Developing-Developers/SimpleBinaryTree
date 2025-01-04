@@ -7,6 +7,7 @@
 #define BINARYTREE_H
 
 #include "tree_node.h"
+#include "tree_iterator.h"
 #include <memory>
 #include <functional> // Used for traversal functions
 
@@ -73,7 +74,6 @@ public:
    **/
   void levelOrderTraversal(const std::function<void(const T&)>& visit_cbck) const;
 
-
   /**
    * @brief Serialises the binary tree to a file.
    * @param filename The name of the file to serialise the tree to.
@@ -87,66 +87,10 @@ public:
   void deserialise(const std::string& filename);
 
   /**
-   * @brief Iterator class for traversing the binary tree.
-   **/
-  class Iterator
-  {
-  public:
-    Iterator(TreeNode<T>* root);
-
-    /**
-     * @brief Move to the left child of the current node.
-     * @return `bool` `true` if the left child exists and the iterator moved, `false` otherwise.
-     **/
-    bool moveToLeftChild();
-
-    /**
-     * @brief Move to the right child of the current node.
-     * @return `bool` `true` if the right child exists and the iterator moved, `false` otherwise.
-     **/
-    bool moveToRightChild();
-
-    /**
-     * @brief Get the value of the current node.
-     * @return `const T&` The value of the current node.
-     **/
-    const T& getValue() const;
-
-    /**
-     * @brief Set the value of the current node.
-     * @param value The new value to set.
-     **/
-    void setValue(const T& value);
-
-    /**
-     * @brief Check if the iterator is at a valid node.
-     * @return `bool` `true` if the iterator is at a valid node, `false` otherwise.
-     **/
-    bool isValid() const;
-
-    /**
-     * @brief Check if the current node is a leaf node.
-     * @return `bool` `true` if the current node is a leaf node, `false` otherwise.
-     **/
-    bool isLeaf() const;
-
-    /**
-     * @brief Create left and right children for the current node.
-     * @param leftValue The value for the left child.
-     * @param rightValue The value for the right child.
-     * @return `bool` `true` if the children were successfully created, `false` otherwise.
-     **/
-    bool createChildren(const T& leftValue, const T& rightValue);
-
-  private:
-    TreeNode<T>* m_current;
-  };
-
-  /**
    * @brief Get an iterator for the binary tree, always starting at the root node.
    * @return `Iterator` An iterator for the binary tree.
    **/
-  Iterator getIterator() const;
+  Iterator<T> getIterator() const;
 
 private:
   std::unique_ptr<TreeNode<T>> m_root;
@@ -155,7 +99,8 @@ private:
 
   void insert_pvt(std::unique_ptr<TreeNode<T>>& node, const T &value) const;
   bool search_pvt(const std::unique_ptr<TreeNode<T>> &node, const T &value) const;
-  std::unique_ptr<TreeNode<T>> remove_pvt(std::unique_ptr<TreeNode<T>> node, const T &value) const;
+
+  std::unique_ptr<TreeNode<T>>         remove_pvt(std::unique_ptr<TreeNode<T>> node, const T &value) const;
   const std::unique_ptr<TreeNode<T>>& findMin_pvt(const std::unique_ptr<TreeNode<T>>& node) const;
 
   void   inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_cbck) const;

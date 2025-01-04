@@ -253,88 +253,9 @@ void BinaryTree<T>::postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& n
 // ---- Iterator Methods ---- //
 
 template <Comparable T>
-BinaryTree<T>::Iterator::Iterator(TreeNode<T>* root)
-  : m_current(root)
-{}
-
-template <Comparable T>
-typename BinaryTree<T>::Iterator BinaryTree<T>::getIterator() const
+Iterator<T> BinaryTree<T>::getIterator() const
 {
   return Iterator(m_root.get()); // Calls the constructor of the `Iterator` class
-}
-
-template <Comparable T>
-bool BinaryTree<T>::Iterator::moveToLeftChild()
-{
-  if (m_current && m_current->m_left) // Also check the current node is not null because dereferencing a null pointer is undefined behavior
-  {
-    m_current = m_current->m_left.get();
-    return true;
-  }
-  return false;
-}
-
-template <Comparable T>
-bool BinaryTree<T>::Iterator::moveToRightChild()
-{
-  if (m_current && m_current->m_right)
-  {
-    m_current = m_current->m_right.get();
-    return true;
-  }
-  return false;
-}
-
-template <Comparable T>
-const T& BinaryTree<T>::Iterator::getValue() const
-{
-  if (m_current)
-  {
-    return m_current->m_value;
-  }
-  throw std::runtime_error("Iterator is not at a valid node");
-}
-
-template <Comparable T>
-void BinaryTree<T>::Iterator::setValue(const T& value)
-{
-  if (m_current)
-  {
-    m_current->m_value = value;
-  }
-  else
-  {
-    throw std::runtime_error("Iterator is not at a valid node");
-  }
-}
-
-template <Comparable T>
-bool BinaryTree<T>::Iterator::isValid() const
-{
-  return m_current != nullptr;
-}
-
-template <Comparable T>
-bool BinaryTree<T>::Iterator::isLeaf() const
-{
-  if (m_current)
-  {
-    return !m_current->m_left && !m_current->m_right;
-  }
-  throw std::runtime_error("Iterator is not at a valid node");
-}
-
-template <Comparable T>
-bool BinaryTree<T>::Iterator::createChildren(const T &leftValue, const T &rightValue)
-{
-  if (m_current && !m_current->m_left && !m_current->m_right)
-  {
-    m_current->m_left  = std::make_unique<TreeNode<T>>(leftValue);
-    m_current->m_right = std::make_unique<TreeNode<T>>(rightValue);
-    return true;
-  }
-
-  return false;
 }
 
 // ---- Serialisation and Deserialisation Methods ---- //
