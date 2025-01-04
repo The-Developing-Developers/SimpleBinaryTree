@@ -20,7 +20,7 @@ template <Comparable T>
 BinaryTree<T>::~BinaryTree()
 {}
 
-// ---- Public Methods ---- //
+// ---- Tree Management Methods ---- //
 
 template <Comparable T>
 void BinaryTree<T>::insert(const T &value)
@@ -45,54 +45,6 @@ bool BinaryTree<T>::search(const T &value) const
 {
   return search_pvt(m_root, value);
 }
-
-// ---- Public Traversal Methods ---- //
-
-template <Comparable T>
-void BinaryTree<T>::inOrderTraversal(const std::function<void(const T&)>& visit_callback) const
-{
-  inOrderTraversal_pvt(m_root, visit_callback);
-}
-
-template <Comparable T>
-void BinaryTree<T>::preOrderTraversal(const std::function<void(const T&)>& visit_callback) const
-{
-  preOrderTraversal_pvt(m_root, visit_callback);
-}
-
-template <Comparable T>
-void BinaryTree<T>::postOrderTraversal(const std::function<void(const T&)>& visit_callback) const
-{
-  postOrderTraversal_pvt(m_root, visit_callback);
-}
-
-template <Comparable T>
-void BinaryTree<T>::levelOrderTraversal(const std::function<void(const T&)>& visit_callback) const
-{
-  // Does not require a private helper method, because level-order traversal is inherently iterative and uses a queue to
-  // manage the nodes to be visited.
-
-  if (!m_root) return;
-
-  std::queue<const TreeNode<T>*> nodeQueue;
-  nodeQueue.push(m_root.get());
-
-  while (!nodeQueue.empty())
-  {
-    const TreeNode<T>* currentNode = nodeQueue.front(); // Get the front element
-    nodeQueue.pop(); // Remove the front element
-
-    visit_callback(currentNode->m_value);
-
-    if (currentNode->m_left)
-      nodeQueue.push(currentNode->m_left.get());
-
-    if (currentNode->m_right)
-      nodeQueue.push(currentNode->m_right.get());
-  }
-}
-
-// ---- Private Helper Methods ---- //
 
 /**
  * @brief Insert a value into the tree.
@@ -219,7 +171,51 @@ const std::unique_ptr<TreeNode<T>>& BinaryTree<T>::findMin_pvt(const std::unique
   return *current;
 }
 
-// ---- Private Traversal Helper Methods ---- //
+// ---- Traversal Methods ---- //
+
+template <Comparable T>
+void BinaryTree<T>::inOrderTraversal(const std::function<void(const T&)>& visit_callback) const
+{
+  inOrderTraversal_pvt(m_root, visit_callback);
+}
+
+template <Comparable T>
+void BinaryTree<T>::preOrderTraversal(const std::function<void(const T&)>& visit_callback) const
+{
+  preOrderTraversal_pvt(m_root, visit_callback);
+}
+
+template <Comparable T>
+void BinaryTree<T>::postOrderTraversal(const std::function<void(const T&)>& visit_callback) const
+{
+  postOrderTraversal_pvt(m_root, visit_callback);
+}
+
+template <Comparable T>
+void BinaryTree<T>::levelOrderTraversal(const std::function<void(const T&)>& visit_callback) const
+{
+  // Does not require a private helper method, because level-order traversal is inherently iterative and uses a queue to
+  // manage the nodes to be visited.
+
+  if (!m_root) return;
+
+  std::queue<const TreeNode<T>*> nodeQueue;
+  nodeQueue.push(m_root.get());
+
+  while (!nodeQueue.empty())
+  {
+    const TreeNode<T>* currentNode = nodeQueue.front(); // Get the front element
+    nodeQueue.pop(); // Remove the front element
+
+    visit_callback(currentNode->m_value);
+
+    if (currentNode->m_left)
+      nodeQueue.push(currentNode->m_left.get());
+
+    if (currentNode->m_right)
+      nodeQueue.push(currentNode->m_right.get());
+  }
+}
 
 template <Comparable T>
 void BinaryTree<T>::inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_callback) const
@@ -254,7 +250,7 @@ void BinaryTree<T>::postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& n
   }
 }
 
-// ---- Public Iterator Methods ---- //
+// ---- Iterator Methods ---- //
 
 template <Comparable T>
 BinaryTree<T>::Iterator::Iterator(TreeNode<T>* root)
