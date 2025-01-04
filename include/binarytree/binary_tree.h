@@ -15,7 +15,7 @@ namespace ddlib
 
 /**
  * @brief A simple binary tree implementation.
- * @tparam T The type of the values stored in the tree. It must support the `<` operator.
+ * @tparam T The type of the values stored in the tree. It must support the `<` and `>` operators.
  **/
 template <Comparable T>
 class BinaryTree
@@ -66,6 +66,68 @@ public:
    * @param visit_cbck Function to call for each node's value.
    **/
   void levelOrderTraversal(const std::function<void(const T&)>& visit_cbck) const;
+
+  /**
+   * @brief Iterator class for traversing the binary tree.
+   **/
+  class Iterator
+  {
+  public:
+    Iterator(TreeNode<T>* root);
+
+    /**
+     * @brief Move to the left child of the current node.
+     * @return `bool` `true` if the left child exists and the iterator moved, `false` otherwise.
+     **/
+    bool moveToLeftChild();
+
+    /**
+     * @brief Move to the right child of the current node.
+     * @return `bool` `true` if the right child exists and the iterator moved, `false` otherwise.
+     **/
+    bool moveToRightChild();
+
+    /**
+     * @brief Get the value of the current node.
+     * @return `const T&` The value of the current node.
+     **/
+    const T& getValue() const;
+
+    /**
+     * @brief Set the value of the current node.
+     * @param value The new value to set.
+     **/
+    void setValue(const T& value);
+
+    /**
+     * @brief Check if the iterator is at a valid node.
+     * @return `bool` `true` if the iterator is at a valid node, `false` otherwise.
+     **/
+    bool isValid() const;
+
+    /**
+     * @brief Check if the current node is a leaf node.
+     * @return `bool` `true` if the current node is a leaf node, `false` otherwise.
+     **/
+    bool isLeaf() const;
+
+    /**
+     * @brief Create left and right children for the current node.
+     * @param leftValue The value for the left child.
+     * @param rightValue The value for the right child.
+     * @return `bool` `true` if the children were successfully created, `false` otherwise.
+     **/
+    bool createChildren(const T& leftValue, const T& rightValue);
+
+  private:
+    TreeNode<T>* m_current;
+  };
+
+  /**
+   * @brief Get an iterator for the binary tree, always starting at the root node.
+   * @return `Iterator` An iterator for the binary tree.
+   **/
+  Iterator getIterator() const;
 
 private:
   std::unique_ptr<TreeNode<T>> m_root;
