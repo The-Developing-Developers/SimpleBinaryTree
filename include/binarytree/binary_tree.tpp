@@ -3,7 +3,9 @@
  * @brief Implementation file for the `BinaryTree` class.
  **/
 
-#include <queue> // Used for level-order traversal
+#include <queue>   // Used for level-order traversal
+#include <fstream> // Used for serialisation / deserialisation
+#include <sstream> // Used for deserialisation
 
 namespace ddlib
 {
@@ -18,7 +20,7 @@ template <Comparable T>
 BinaryTree<T>::~BinaryTree()
 {}
 
-// ---- Public Methods ---- //
+// ---- Tree Management Methods ---- //
 
 template <Comparable T>
 void BinaryTree<T>::insert(const T &value)
@@ -33,12 +35,16 @@ void BinaryTree<T>::remove(const T &value)
 }
 
 template <Comparable T>
+bool BinaryTree<T>::isEmpty() const
+{
+  return m_root == nullptr;
+}
+
+template <Comparable T>
 bool BinaryTree<T>::search(const T &value) const
 {
   return search_pvt(m_root, value);
 }
-
-// ---- Private Helper Methods ---- //
 
 /**
  * @brief Insert a value into the tree.
@@ -174,48 +180,15 @@ void BinaryTree<T>::inOrderTraversal(const std::function<void(const T&)>& visit_
 }
 
 template <Comparable T>
-void BinaryTree<T>::inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_callback) const
-{
-  if (node != nullptr)
-  {
-    inOrderTraversal_pvt(node->m_left, visit_callback);
-    visit_callback(node->m_value);
-    inOrderTraversal_pvt(node->m_right, visit_callback);
-  }
-}
-
-template <Comparable T>
 void BinaryTree<T>::preOrderTraversal(const std::function<void(const T&)>& visit_callback) const
 {
   preOrderTraversal_pvt(m_root, visit_callback);
 }
 
 template <Comparable T>
-void BinaryTree<T>::preOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_callback) const
-{
-  if (node != nullptr)
-  {
-    visit_callback(node->m_value);
-    preOrderTraversal_pvt(node->m_left, visit_callback);
-    preOrderTraversal_pvt(node->m_right, visit_callback);
-  }
-}
-
-template <Comparable T>
 void BinaryTree<T>::postOrderTraversal(const std::function<void(const T&)>& visit_callback) const
 {
   postOrderTraversal_pvt(m_root, visit_callback);
-}
-
-template <Comparable T>
-void BinaryTree<T>::postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_callback) const
-{
-  if (node != nullptr)
-  {
-    postOrderTraversal_pvt(node->m_left, visit_callback);
-    postOrderTraversal_pvt(node->m_right, visit_callback);
-    visit_callback(node->m_value);
-  }
 }
 
 template <Comparable T>
@@ -241,6 +214,39 @@ void BinaryTree<T>::levelOrderTraversal(const std::function<void(const T&)>& vis
 
     if (currentNode->m_right)
       nodeQueue.push(currentNode->m_right.get());
+  }
+}
+
+template <Comparable T>
+void BinaryTree<T>::inOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_callback) const
+{
+  if (node != nullptr)
+  {
+    inOrderTraversal_pvt(node->m_left, visit_callback);
+    visit_callback(node->m_value);
+    inOrderTraversal_pvt(node->m_right, visit_callback);
+  }
+}
+
+template <Comparable T>
+void BinaryTree<T>::preOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_callback) const
+{
+  if (node != nullptr)
+  {
+    visit_callback(node->m_value);
+    preOrderTraversal_pvt(node->m_left, visit_callback);
+    preOrderTraversal_pvt(node->m_right, visit_callback);
+  }
+}
+
+template <Comparable T>
+void BinaryTree<T>::postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& node, const std::function<void(const T&)>& visit_callback) const
+{
+  if (node != nullptr)
+  {
+    postOrderTraversal_pvt(node->m_left, visit_callback);
+    postOrderTraversal_pvt(node->m_right, visit_callback);
+    visit_callback(node->m_value);
   }
 }
 
@@ -329,6 +335,102 @@ bool BinaryTree<T>::Iterator::createChildren(const T &leftValue, const T &rightV
   }
 
   return false;
+}
+
+// ---- Serialisation and Deserialisation Methods ---- //
+
+template <Comparable T>
+void BinaryTree<T>::serialise(const std::string& filename) const
+{
+  std::ofstream outFile(filename);
+  if (!outFile)
+    throw std::runtime_error("Cannot open file for writing");
+
+  serialiseNode_pvt(outFile, m_root);
+  outFile.close();
+}
+
+template <Comparable T>
+void BinaryTree<T>::deserialise(const std::string& filename)
+{
+  std::ifstream inFile(filename);
+  if (!inFile)
+    throw std::runtime_error("Cannot open file for reading");
+
+  std::stringstream buffer;
+  buffer << inFile.rdbuf(); // Read the binary file into a stringstream
+  std::string dataString = buffer.str(); // Extract the string from the stringstream
+  std::istringstream dataStream(dataString); // Create an input string stream from the string
+  m_root = deserialiseNode_pvt(dataStream);
+  inFile.close();
+}
+
+template <Comparable T>
+void BinaryTree<T>::serialiseNode_pvt(std::ofstream& outFile, const std::unique_ptr<TreeNode<T>>& node) const
+{
+  if (node)
+  {
+    if constexpr (std::is_same_v<T, std::string>)
+      outFile << "\"" << node->m_value << "\" "; // Use double quotes to denote string values
+    else
+      outFile << node->m_value << " "; // Use a space to separate values
+
+    serialiseNode_pvt(outFile, node->m_left);
+    serialiseNode_pvt(outFile, node->m_right);
+  }
+  else
+  {
+    outFile << "# "; // Use '#' to denote null nodes. The space is used to separate values
+  }
+}
+
+template <Comparable T>
+std::unique_ptr<TreeNode<T>> BinaryTree<T>::deserialiseNode_pvt(std::istringstream& inStream)
+{
+  std::string valueFromStream;
+  inStream >> valueFromStream; // Read the next value from the stream up to the next space. The binary file has been converted to an istringstream by the caller
+
+  if (valueFromStream == "#")
+  {
+    return nullptr; // Base case: null node
+  }
+  else
+  {
+    T nodeValue; // The value to store in the node. Can be a `std::string` or a primitive type
+
+    if constexpr (std::is_same_v<T, std::string>)
+    {
+      // `T` is a string type
+      if (valueFromStream.front() == '"')
+      {
+        // Start of a quoted string
+        std::string restOfString;
+        if (valueFromStream.back() != '"')
+        {
+          // The string contains spaces, and must be read until the closing double quote
+          std::getline(inStream, restOfString, '"'); // Read the rest of the string until the closing double quote
+          nodeValue = valueFromStream.substr(1) + restOfString; // Combine the parts without adding an extra space
+        }
+        else
+        {
+          // The string does not contain spaces, and can be read directly
+          nodeValue = valueFromStream.substr(1, valueFromStream.size() - 2); // Remove the double quotes
+        }
+      }
+      else
+      {
+        throw std::runtime_error("Malformed string in serialised data");
+      }
+    }
+    else
+    {
+      std::istringstream(valueFromStream) >> nodeValue; // `T` is a primitive type
+    }
+    auto node = std::make_unique<TreeNode<T>>(nodeValue);
+    node->m_left  = deserialiseNode_pvt(inStream);
+    node->m_right = deserialiseNode_pvt(inStream);
+    return node;
+  }
 }
 
 } // namespace ddlib
