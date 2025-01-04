@@ -454,6 +454,7 @@ TEST(BinaryTreeTestSerialisation, SerialiseAndDeserialiseStrings)
   tree.insert("world");
   tree.insert("foo bar");
   tree.insert("abc DEF 123 890");
+  tree.insert("string    with    many    spaces");
 
   // Serialise the tree to a file
   std::string filename = "tree_serialised_strings.dat";
