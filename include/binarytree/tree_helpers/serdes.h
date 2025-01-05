@@ -6,6 +6,19 @@
 namespace ddlib
 {
 
+/**
+ * @brief Serialisation and deserialisation class for the `BinaryTree` class.
+ *
+ * The `SerDes` class provides methods to serialise and deserialise a binary tree to/from a file.
+ *
+ * Don't create an instance of this class. Instead, use the `BinaryTree` class's methods to serialise and deserialise the
+ * tree.
+ *
+ * @tparam T The type of the values stored in the tree. It must support the `<` and `>` operators.
+ * @see BinaryTree
+ * @see TreeNode
+ * @see TreeIterator
+ **/
 template <Comparable T>
 class SerDes
 {

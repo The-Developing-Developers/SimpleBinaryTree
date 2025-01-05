@@ -253,9 +253,9 @@ void BinaryTree<T>::postOrderTraversal_pvt(const std::unique_ptr<TreeNode<T>>& n
 // ---- Iterator Methods ---- //
 
 template <Comparable T>
-Iterator<T> BinaryTree<T>::getIterator() const
+TreeIterator<T> BinaryTree<T>::getIterator() const
 {
-  return Iterator(m_root.get()); // Calls the constructor of the `Iterator` class
+  return TreeIterator(m_root.get()); // Calls the constructor of the `TreeIterator` class
 }
 
 // ---- Serialisation and Deserialisation Methods ---- //
