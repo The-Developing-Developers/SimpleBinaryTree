@@ -8,6 +8,7 @@
 
 #include "tree_helpers/tree_node.h"
 #include "tree_helpers/tree_iterator.h"
+#include "tree_helpers/serdes.h"
 #include <memory>
 #include <functional> // Used for traversal functions
 
@@ -94,6 +95,7 @@ public:
 
 private:
   std::unique_ptr<TreeNode<T>> m_root;
+  SerDes<T> m_serdes;
 
   // ---- Helper methods ---- //
 
