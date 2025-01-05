@@ -263,13 +263,13 @@ TreeIterator<T> BinaryTree<T>::getIterator() const
 template <Comparable T>
 void BinaryTree<T>::serialise(const std::string& filename) const
 {
-  m_serdes.serialise(filename, m_root);
+  m_serdes.serialise(filename, m_root); // Delegate the serialisation to the `SerDes` class
 }
 
 template <Comparable T>
 void BinaryTree<T>::deserialise(const std::string& filename)
 {
-  m_root = m_serdes.deserialise(filename);
+  m_root = m_serdes.deserialise(filename); // Delegate the deserialisation to the `SerDes` class
 }
 
 } // namespace ddlib

@@ -22,11 +22,12 @@ namespace ddlib
 template <Comparable T>
 class SerDes
 {
-public:
-  void serialise(const std::string& filename, const std::unique_ptr<TreeNode<T>>& root) const;
-  std::unique_ptr<TreeNode<T>> deserialise(const std::string& filename) const;
-
 private:
+  friend class BinaryTree<T>; // Users should use the `BinaryTree` class's methods to serialise and deserialise the tree
+
+  void serialise(const std::string& filename, const std::unique_ptr<TreeNode<T>>& root) const; // Serialise the tree to a file. Use the `BinaryTree` class's public method instead.
+  std::unique_ptr<TreeNode<T>> deserialise(const std::string& filename) const; // Deserialise the tree from a file. Use the `BinaryTree` class's public method instead.
+
   void serialiseNode_pvt(std::ofstream& outFile, const std::unique_ptr<TreeNode<T>>& node) const;
   std::unique_ptr<TreeNode<T>> deserialiseNode_pvt(std::istringstream& inStream) const;
 };
