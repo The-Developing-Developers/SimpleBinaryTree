@@ -3,7 +3,7 @@
  * @brief Unit tests for the `BinaryTree` class.
  **/
 
-#include "binary_tree.h"
+#include "binarytree/binary_tree.h"
 #include "t_comparable_type.h"
 #include <gtest/gtest.h>
 #include <vector>
