@@ -1,6 +1,6 @@
 /**
  * @file tree_node.h
- * @brief Definition of the `TreeNode` structure. It is the building block of the binary tree.
+ * @brief Definition of the `TreeNode` class. It is the building block of the binary tree.
  **/
 
 #ifndef TREENODE_H
@@ -12,18 +12,32 @@
 namespace ddlib
 {
 
+// Forward declarations. Necessary to declare the `BinaryTree` and `Iterator` classes as friends.
+template <Comparable T> class BinaryTree;
+template <Comparable T> class Iterator;
+
 /**
  * @brief A node in a binary tree.
  *
- * This structure represents a node in a binary tree. It can contain a value of type `T` and pointers to the left and
- * right children (if any). \n
- * The data members are public for simplicity. If they were private, we would need to provide getters and setters.
+ * This class represents a node in a binary tree. It can contain a value of type `T` and pointers to the left and
+ * right children (if any).
  **/
 template <Comparable T>
-struct TreeNode
+class TreeNode
 {
+public:
+  TreeNode(const T &value)
+    : m_value(value)
+  {}
+
+private:
+
+  // Allow access to private members
+  friend class BinaryTree<T>;
+  friend class Iterator<T>;
+
   /**
-   * @brief The value stored in the node.
+   * @brief The value stored in the node. Can be any type that supports the `<` and `>` operators.
    **/
   T m_value;
 
@@ -37,9 +51,6 @@ struct TreeNode
    **/
   std::unique_ptr<TreeNode> m_right = nullptr;
 
-  TreeNode(const T &value)
-  : m_value(value)
-  {}
 };
 
 } // namespace ddlib
