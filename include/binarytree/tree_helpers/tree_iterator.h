@@ -1,6 +1,6 @@
 /**
  * @file tree_iterator.h
- * @brief Definition of the `Iterator` class for the `BinaryTree`.
+ * @brief Definition of the `TreeIterator` class for the `BinaryTree`.
  **/
 
 #ifndef TREE_ITERATOR_H
@@ -27,10 +27,10 @@ template <Comparable T> class BinaryTree; // Forward declaration
  * @see TreeNode
  **/
 template <Comparable T>
-class Iterator
+class TreeIterator
 {
 public:
-  Iterator(TreeNode<T>* root);
+  TreeIterator(TreeNode<T>* root);
 
   /**
    * @brief Move to the left child of the current node.

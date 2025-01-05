@@ -76,22 +76,22 @@ public:
   void levelOrderTraversal(const std::function<void(const T&)>& visit_cbck) const;
 
   /**
-   * @brief Serialises the binary tree to a file.
+   * @brief Serialises the binary tree to a file. Only supports primitive types and `std::string` for type `T`.
    * @param filename The name of the file to serialise the tree to.
    **/
   void serialise(const std::string& filename) const;
 
   /**
-   * @brief Deserialises the binary tree from a file.
+   * @brief Deserialises the binary tree from a file. Only supports primitive types and `std::string` for type `T`.
    * @param filename The name of the file to deserialise the tree from.
    **/
   void deserialise(const std::string& filename);
 
   /**
    * @brief Get an iterator for the binary tree, always starting at the root node.
-   * @return `Iterator` An iterator for the binary tree.
+   * @return `TreeIterator` An iterator for the binary tree.
    **/
-  Iterator<T> getIterator() const;
+  TreeIterator<T> getIterator() const;
 
 private:
   std::unique_ptr<TreeNode<T>> m_root;

@@ -1,10 +1,10 @@
 template <Comparable T>
-Iterator<T>::Iterator(TreeNode<T>* root)
+TreeIterator<T>::TreeIterator(TreeNode<T>* root)
   : m_current(root)
 {}
 
 template <Comparable T>
-bool Iterator<T>::moveToLeftChild()
+bool TreeIterator<T>::moveToLeftChild()
 {
   if (m_current && m_current->m_left) // Also check the current node is not null because dereferencing a null pointer is undefined behavior
   {
@@ -15,7 +15,7 @@ bool Iterator<T>::moveToLeftChild()
 }
 
 template <Comparable T>
-bool Iterator<T>::moveToRightChild()
+bool TreeIterator<T>::moveToRightChild()
 {
   if (m_current && m_current->m_right)
   {
@@ -26,7 +26,7 @@ bool Iterator<T>::moveToRightChild()
 }
 
 template <Comparable T>
-const T& Iterator<T>::getValue() const
+const T& TreeIterator<T>::getValue() const
 {
   if (m_current)
   {
@@ -36,7 +36,7 @@ const T& Iterator<T>::getValue() const
 }
 
 template <Comparable T>
-void Iterator<T>::setValue(const T& value)
+void TreeIterator<T>::setValue(const T& value)
 {
   if (m_current)
   {
@@ -49,13 +49,13 @@ void Iterator<T>::setValue(const T& value)
 }
 
 template <Comparable T>
-bool Iterator<T>::isValid() const
+bool TreeIterator<T>::isValid() const
 {
   return m_current != nullptr;
 }
 
 template <Comparable T>
-bool Iterator<T>::isLeaf() const
+bool TreeIterator<T>::isLeaf() const
 {
   if (m_current)
   {
@@ -65,7 +65,7 @@ bool Iterator<T>::isLeaf() const
 }
 
 template <Comparable T>
-bool Iterator<T>::createChildren(const T &leftValue, const T &rightValue)
+bool TreeIterator<T>::createChildren(const T &leftValue, const T &rightValue)
 {
   if (m_current && !m_current->m_left && !m_current->m_right)
   {
