@@ -15,6 +15,7 @@ namespace ddlib
 // Forward declarations. Necessary to declare the `BinaryTree` and `Iterator` classes as friends.
 template <Comparable T> class BinaryTree;
 template <Comparable T> class Iterator;
+template <Comparable T> class SerDes;
 
 /**
  * @brief A node in a binary tree.
@@ -35,6 +36,7 @@ private:
   // Allow access to private members
   friend class BinaryTree<T>;
   friend class Iterator<T>;
+  friend class SerDes<T>;
 
   /**
    * @brief The value stored in the node. Can be any type that supports the `<` and `>` operators.
