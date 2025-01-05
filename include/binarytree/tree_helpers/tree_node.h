@@ -6,7 +6,7 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
-#include "concepts/comparable.h"
+#include "binarytree/concepts/comparable.h"
 #include <memory>
 
 namespace ddlib
