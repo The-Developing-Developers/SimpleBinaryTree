@@ -6,11 +6,11 @@
 #ifndef BINARYTREE_H
 #define BINARYTREE_H
 
-#include "tree_helpers/tree_node.h"
-#include "tree_helpers/tree_iterator.h"
-#include "tree_helpers/serdes.h"
-#include <memory>
 #include <functional> // Used for traversal functions
+#include "tree_helpers/serdes.h"
+
+class TreeNode;
+class TreeIterator;
 
 namespace ddlib
 {

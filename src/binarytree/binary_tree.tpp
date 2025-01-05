@@ -5,7 +5,9 @@
 
 #include <queue>   // Used for level-order traversal
 #include <fstream> // Used for serialisation / deserialisation
-#include <sstream> // Used for deserialisation
+#include <sstream> // Used for serialisation / deserialisation
+#include "binarytree/tree_helpers/tree_node.h"
+#include "binarytree/tree_helpers/tree_iterator.h"
 
 namespace ddlib
 {
