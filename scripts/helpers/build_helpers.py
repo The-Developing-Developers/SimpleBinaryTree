@@ -12,10 +12,11 @@ from .           import config as cfg
 
 # ---- Functions definitions ---- #
 
-def print_arguments():
+def print_args_and_interpreter():
   print('This script has been called with the following arguments:')
   for idx, argument in enumerate(sys.argv):
     print('  - Argument #' + str(idx) + ' is: ' + colored(argument, 'green'))
+  print('The Python interpreter is: ' + colored(sys.executable, 'yellow'))
   print()
 
 

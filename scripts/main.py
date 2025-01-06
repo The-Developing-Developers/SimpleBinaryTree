@@ -1,5 +1,7 @@
 # This script builds the tests for the project and runs them.
-# The script's prerequisite is running the setup script `setup.py` before executing this script.
+#
+# It is recommended to run the `launcher.py` script instead of running this script directly, because `launcher.py`
+# activates the virtual environment and then runs this script.
 
 import sys
 import time
@@ -11,7 +13,7 @@ def main():
   start: float = time.time()
 
   utl.recognise_platform_or_quit()
-  bld.print_arguments()
+  bld.print_args_and_interpreter()
   bld.assign_and_display_project_paths()
   bld.execute_user_choice()
 
@@ -29,9 +31,8 @@ def main():
   print( '  ~ ' + time_elapsed_s_str  + ' seconds')
   print( '  ~ ' + time_elapsed_mm_ss_str  + ' minutes:seconds')
 
-
-# Main guard
 if __name__ == '__main__':
+  print()
   try:
     main()
   except Exception as ex:
