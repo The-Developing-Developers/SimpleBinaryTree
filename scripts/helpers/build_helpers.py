@@ -75,7 +75,7 @@ def prepare_build_files():
   print("\nExecuting command: " + colored(' '.join(command), 'yellow'))
 
   try:
-    subprocess.run(command, shell = True, check = True)
+    subprocess.run(command, check = True)
   except Exception as ex:
     print(ex)
     utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error preparing configuration files.')
@@ -90,7 +90,7 @@ def build_tests():
   print('\nExecuting command: ' + colored(' '.join(command), 'yellow'))
 
   try:
-    subprocess.run(command, shell = True, check = True)
+    subprocess.run(command, check = True)
   except Exception as ex:
     print(ex)
     utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error calling `CMake --build` for this configuration. Make sure you have run the `--prepareBuildFiles` task first.')
@@ -104,7 +104,7 @@ def clean_project():
     command = ['cmake', '--build', cfg.BUILD_FULLDIR, '--target', 'clean']
     print('\nExecuting command: ' + colored(' '.join(command), 'yellow'))
     try:
-      subprocess.run(command, shell = True, check = True)
+      subprocess.run(command, check = True)
     except Exception as ex:
       print(ex)
       utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error cleaning project.')
