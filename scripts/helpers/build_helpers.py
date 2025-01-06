@@ -71,7 +71,7 @@ def prepare_build_files():
   # if generator: # TODO: make this configurable
   #   print(f"\nUsing the {GREEN}user-specified generator{RESET}: {CYAN}{generator}{RESET}")
   #   command.extend(['-G', generator])
-  command.extend(['-G', 'MinGW Makefiles']) # TODO: make this configurable
+  # command.extend(['-G', 'MinGW Makefiles']) # TODO: make this configurable
   print("\nExecuting command: " + colored(' '.join(command), 'yellow'))
 
   try:
@@ -85,6 +85,9 @@ def prepare_build_files():
 
 
 def build_tests():
+  if not os.path.exists(cfg.BUILD_SUBDIR):
+    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': directory \"' + cfg.BUILD_SUBDIR + '\" does not exist. Try preparing build files first.')
+
   print(colored('\nBuilding tests...', 'cyan'))
   command = ['cmake', '--build', cfg.BUILD_SUBDIR, '-j8']
   print('\nExecuting command: ' + colored(' '.join(command), 'yellow'))
@@ -100,97 +103,97 @@ def build_tests():
 
 
 def clean_project():
-  if os.path.exists(cfg.BUILD_FULLDIR):
-    command = ['cmake', '--build', cfg.BUILD_FULLDIR, '--target', 'clean']
-    print('\nExecuting command: ' + colored(' '.join(command), 'yellow'))
-    try:
-      subprocess.run(command, check = True)
-    except Exception as ex:
-      print(ex)
-      utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error cleaning project.')
-    else:
-      print()
-      utl.print_information(cfg.BUILD_FULLDIR + ' directory has been cleaned.')
+  if not os.path.exists(cfg.BUILD_SUBDIR):
+    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': directory \"' + cfg.BUILD_SUBDIR + '\" does not exist.')
+
+  command = ['cmake', '--build', cfg.BUILD_SUBDIR, '--target', 'clean']
+  print('\nExecuting command: ' + colored(' '.join(command), 'yellow'))
+  try:
+    subprocess.run(command, check = True)
+  except Exception as ex:
+    print(ex)
+    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error cleaning project.')
   else:
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': ' + cfg.BUILD_FULLDIR + ' does not exist.')
+    print()
+    utl.print_information(cfg.BUILD_SUBDIR + ' directory has been cleaned.')
 
 
 def clean_cache():
-  if os.path.exists(cfg.CMAKECACHE_TXT_FILE):
-    print('\nAttempting to remove ' + colored(cfg.CMAKECACHE_TXT_FILE, 'yellow') + '...')
-    try:
-      os.remove(cfg.CMAKECACHE_TXT_FILE)
-    except Exception as ex:
-      print(ex)
-      utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error trying to remove ' + cfg.CMAKECACHE_TXT_FILE + '.')
-    else:
-      utl.print_information(cfg.CMAKECACHE_TXT_FILE + ' has been removed.\n')
+  if not os.path.exists(cfg.CMAKECACHE_TXT_FILE):
+    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': file \"' + cfg.CMAKECACHE_TXT_FILE + '\" not found.')
+
+  print('\nAttempting to remove ' + colored(cfg.CMAKECACHE_TXT_FILE, 'yellow') + '...')
+  try:
+    os.remove(cfg.CMAKECACHE_TXT_FILE)
+  except Exception as ex:
+    print(ex)
+    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error trying to remove ' + cfg.CMAKECACHE_TXT_FILE + '.')
   else:
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': ' + cfg.CMAKECACHE_TXT_FILE + ' not found.')
+    utl.print_information(cfg.CMAKECACHE_TXT_FILE + ' has been removed.\n')
 
 
 def remove_build_dir():
-  if os.path.exists(cfg.BUILD_FULLDIR):
-    print('\nAttempting to remove ' + colored(cfg.BUILD_FULLDIR, 'yellow') + '...')
+  if not os.path.exists(cfg.BUILD_SUBDIR):
+    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': directory \"' + cfg.BUILD_SUBDIR + '\" does not exist.')
+
+  print('\nAttempting to remove ' + colored(cfg.BUILD_SUBDIR, 'yellow') + '...')
+  try:
+    shutil.rmtree(cfg.BUILD_SUBDIR)
+  except Exception as ex1:
+    print(ex1)
+    print('Error using `' + colored('shutil.rmtree', 'yellow') + '`. Trying with command line instructions...')
     try:
-      shutil.rmtree(cfg.BUILD_FULLDIR)
-    except Exception as ex1:
-      print(ex1)
-      print('Error using `' + colored('shutil.rmtree', 'yellow') + '`. Trying with command line instructions...')
-      try:
-        if cfg.PLATFORM_SYSTEM in ['Linux', 'Darwin']:
-          os.system('rm -rf \"{}\"'.format(cfg.BUILD_FULLDIR))
-        elif cfg.PLATFORM_SYSTEM == 'Windows':
-          os.system('rmdir /S /Q \"{}\"'.format(cfg.BUILD_FULLDIR))
-        else:
-          utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': ' + cfg.PLATFORM_NOT_RECOGNISED_STR)
-      except Exception as ex2:
-        print(ex2)
-        cprint('Error using command line instructions.', 'red')
-        return
+      if cfg.PLATFORM_SYSTEM in ['Linux', 'Darwin']:
+        os.system('rm -rf \"{}\"'.format(cfg.BUILD_SUBDIR))
+      elif cfg.PLATFORM_SYSTEM == 'Windows':
+        os.system('rmdir /S /Q \"{}\"'.format(cfg.BUILD_SUBDIR))
       else:
-        print('Directory `' + colored(cfg.BUILD_FULLDIR, 'yellow') + '` has been removed.')
-        print()
+        utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': ' + cfg.PLATFORM_NOT_RECOGNISED_STR)
+    except Exception as ex2:
+      print(ex2)
+      cprint('Error using command line instructions.', 'red')
+      return
     else:
-      print('Directory `' + colored(cfg.BUILD_FULLDIR, 'yellow') + '` has been removed.')
+      print('Directory `' + colored(cfg.BUILD_SUBDIR, 'yellow') + '` has been removed.')
       print()
   else:
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': ' + cfg.BUILD_FULLDIR + ' does not exist.')
+    print('Directory `' + colored(cfg.BUILD_SUBDIR, 'yellow') + '` has been removed.')
+    print()
 
 
 def test_project(testing_type: str = cfg.TESTING_TYPE_NORMAL):
-  if os.path.exists(cfg.TESTS_FULLDIR):
-    parameter: list[str] = []
-    TESTING_PARAM_VERBOSE:     list[str] = ['-VV']
-    TESTING_PARAM_ONLY_FAILED: list[str] = ['--rerun-failed', '--output-on-failure']
+  if not os.path.exists(cfg.TESTS_FULLDIR):
+    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Testing subdirectory \"' + cfg.TESTS_FULLDIR + '\" does not exist. Try preparing and building first.')
 
-    if testing_type == cfg.TESTING_TYPE_VERBOSE:
-      parameter = TESTING_PARAM_VERBOSE
-    elif testing_type == cfg.TESTING_TYPE_ONLY_FAILED:
-      parameter = TESTING_PARAM_ONLY_FAILED
+  parameter: list[str] = []
+  TESTING_PARAM_VERBOSE:     list[str] = ['-VV']
+  TESTING_PARAM_ONLY_FAILED: list[str] = ['--rerun-failed', '--output-on-failure']
 
-    command: list[str] = ['ctest'] + parameter
-    os.chdir(cfg.TESTS_FULLDIR)
-    print('\nExecuting command: ' + colored(' '.join(command), 'yellow') + '\n')
+  if testing_type == cfg.TESTING_TYPE_VERBOSE:
+    parameter = TESTING_PARAM_VERBOSE
+  elif testing_type == cfg.TESTING_TYPE_ONLY_FAILED:
+    parameter = TESTING_PARAM_ONLY_FAILED
+
+  command: list[str] = ['ctest'] + parameter
+  os.chdir(cfg.TESTS_FULLDIR)
+  print('\nExecuting command: ' + colored(' '.join(command), 'yellow') + '\n')
+  try:
+    subprocess.run(command, check = True)
+  except subprocess.CalledProcessError as ex:
+    print(ex)
+    print(colored('\nERROR: initial testing failed.', 'white', 'on_red'))
+    print('Re-running failed tests...')
     try:
+      parameter = TESTING_PARAM_ONLY_FAILED
+      command = ['ctest'] + parameter
+      print('\nExecuting command: ' + colored(' '.join(command), 'yellow') + '\n')
       subprocess.run(command, check = True)
     except subprocess.CalledProcessError as ex:
       print(ex)
-      print(colored('\nERROR: initial testing failed.', 'white', 'on_red'))
-      print('Re-running failed tests...')
-      try:
-        parameter = TESTING_PARAM_ONLY_FAILED
-        command = ['ctest'] + parameter
-        print('\nExecuting command: ' + colored(' '.join(command), 'yellow') + '\n')
-        subprocess.run(command, check = True)
-      except subprocess.CalledProcessError as ex:
-        print(ex)
-        utl.print_unsuccessful_event('Some tests failed.')
-    else:
-      print()
-      utl.print_successful_event('Testing was successful.')
+      utl.print_unsuccessful_event('Some tests failed.')
   else:
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Testing subdirectory ' + cfg.TESTS_FULLDIR + ' does not exist. Try preparing and building first.')
+    print()
+    utl.print_successful_event('Testing was successful.')
 
 
 def print_help():
