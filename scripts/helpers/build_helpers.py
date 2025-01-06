@@ -31,6 +31,7 @@ def assign_and_display_project_paths():
 
 def execute_user_choice():
   user_choice: str = ''
+  generator:   str = None
 
   if len(sys.argv) > 1:
     user_choice = sys.argv[1]
@@ -50,7 +51,12 @@ def execute_user_choice():
   elif user_choice == '--cleanProject' or user_choice == '-cp':
     clean_project()
   elif user_choice == '--prepareBuildFiles' or user_choice == '-p':
-    prepare_build_files()
+    # Check for the -G option to specify the generator
+    if '-G' in sys.argv:
+      generator_index = sys.argv.index('-G') + 1
+      if generator_index < len(sys.argv):
+        generator = sys.argv[generator_index]
+    prepare_build_files(generator)
   elif user_choice == '--removeBuildDir' or user_choice == '-r':
     remove_build_dir()
   elif user_choice == '--test' or user_choice == '-t':
@@ -65,13 +71,12 @@ def execute_user_choice():
     return
 
 
-def prepare_build_files():
+def prepare_build_files(generator: str = None):
   print(colored("\nPreparing build files...", 'cyan'))
   command = ['cmake', '-S', '.', '-B', cfg.BUILD_SUBDIR, '-DBUILD_TESTS=ON']
-  # if generator: # TODO: make this configurable
-  #   print(f"\nUsing the {GREEN}user-specified generator{RESET}: {CYAN}{generator}{RESET}")
-  #   command.extend(['-G', generator])
-  # command.extend(['-G', 'MinGW Makefiles']) # TODO: make this configurable
+  if generator:
+    print('\nUsing the ' + colored('user-specified generator', 'yellow') + ': ' + colored(generator, 'cyan'))
+    command.extend(['-G', generator])
   print("\nExecuting command: " + colored(' '.join(command), 'yellow'))
 
   try:
@@ -208,7 +213,8 @@ def print_help():
   print('-cc,   --cleanCache           Clean the project\'s Cache (Removes `' + colored('CMakeCache.txt', 'yellow') + '`)')
   print('-cp,   --cleanProject         Clean the project')
   print()
-  print('-p,    --prepareBuildFiles    Prepare build files for the tests')
+  print('-p,    --prepareBuildFiles    Prepare build files for the tests. CMake will use the default generator')
+  print('-p -G \"Generator\"             Prepare build files for the tests, specifying the generator (for example, \"Unix Makefiles\")')
   print()
   print('-r,    --removeBuildDir       Remove build directory')
   print()

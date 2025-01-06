@@ -6,8 +6,9 @@
 import sys
 import time
 
-from helpers import build_helpers as bld
-from helpers import utils         as utl
+from helpers   import build_helpers as bld
+from helpers   import utils         as utl
+from termcolor import colored
 
 def main():
   start: float = time.time()
@@ -26,7 +27,7 @@ def main():
   time_elapsed_s_str    : str = format(time_elapsed_s,  '.3f')
   time_elapsed_mm_ss_str: str = time.strftime("%M:%S", time.gmtime(time_elapsed_s))
 
-  print('\nThe process took:')
+  print('\n' + colored('The process took', 'white', 'on_blue') + ':')
   print( '  ~ ' + time_elapsed_ms_str + ' milliseconds')
   print( '  ~ ' + time_elapsed_s_str  + ' seconds')
   print( '  ~ ' + time_elapsed_mm_ss_str  + ' minutes:seconds')

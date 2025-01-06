@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 
-from helpers.config import PLATFORM_SYSTEM, PLATFORM_RELEASE, PLATFORM_VERSION
+from helpers.config import PLATFORM_SYSTEM
 
 # ---- ANSI Colour Codes ---- #
 
