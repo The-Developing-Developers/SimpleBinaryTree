@@ -13,6 +13,8 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # Prevent overriding the pare
 
 FetchContent_MakeAvailable(googletest) # Fetch the content
 
+# TODO: add a project name for the test project?
+
 add_executable(test_binary_tree test_binary_tree.cpp) # Create an executable target called `test_binary_tree` from the source file `test_binary_tree.cpp`
 
 target_link_libraries(test_binary_tree gtest_main SimpleBinaryTree) # Link the executable target to the Google Test library and the SimpleBinaryTree library
