@@ -66,15 +66,13 @@ def main():
 
   # Path to script to activate the virtual environment
   if PLATFORM_SYSTEM == 'Windows':
-    activate_script = os.path.join(VENV_DIR, 'Scripts', 'activate')
+    venv_python_exe = os.path.join(VENV_DIR, 'Scripts', 'python')
   elif PLATFORM_SYSTEM in ['Linux', 'Darwin']:
-    activate_script = os.path.join(VENV_DIR, 'bin', 'activate')
+    venv_python_exe = os.path.join(VENV_DIR, 'bin', 'python')
 
-  # Update Pip in the virtual environment
-  subprocess.check_call(f'{activate_script} && python -m pip install --upgrade pip', shell = True)
-
-  # Install the requirements in the virtual environment
-  subprocess.check_call(f'{activate_script} && pip install -r {REQUIREMENTS_FILE}', shell = True)
+  # Update Pip and install the requirements in the virtual environment
+  subprocess.check_call([venv_python_exe, '-m', 'pip', 'install', '--upgrade', 'pip'])
+  subprocess.check_call([venv_python_exe, '-m', 'pip', 'install', '-r', REQUIREMENTS_FILE])
 
 # ---- Main guard ---- #
 
