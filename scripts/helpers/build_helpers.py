@@ -12,6 +12,15 @@ from .           import config as cfg
 
 # ---- Functions definitions ---- #
 
+def assign_and_display_project_paths():
+  print('Project\'s '     + colored('paths', 'yellow') + ':')
+  print('  - Repository ' + colored('root', 'cyan') + '                 directory    is: ' + colored(cfg.PROJECT_FULLDIR, 'green'))
+  print('  - Project    '    + colored('build base', 'cyan') + '           subdirectory is: ' + colored(cfg.BUILD_FULLDIR.replace(cfg.PROJECT_FULLDIR, ''), 'green'))
+  print('  - Project    '    + colored('CMakeCache.txt', 'cyan') + '       path         is: ' + colored(cfg.CMAKECACHE_TXT_FILE.replace(cfg.PROJECT_FULLDIR, ''), 'green'))
+  print('  - Project    '    + colored('testing build output', 'cyan') + ' subdirectory is: ' + colored(cfg.TESTS_FULLDIR.replace(cfg.PROJECT_FULLDIR, ''), 'green'))
+  print()
+
+
 def print_args_and_interpreter():
   print('This script has been called with the following arguments:')
   for idx, argument in enumerate(sys.argv):
@@ -20,13 +29,45 @@ def print_args_and_interpreter():
   print()
 
 
-def assign_and_display_project_paths():
-  print('Project\'s '     + colored('paths', 'yellow') + ':')
-  print('  - Repository ' + colored('root', 'cyan') + '                 directory    is: ' + colored(cfg.PROJECT_FULLDIR, 'green'))
-  print('  - Project    '    + colored('build base', 'cyan') + '           subdirectory is: ' + colored(cfg.BUILD_FULLDIR.replace(cfg.PROJECT_FULLDIR, ''), 'green'))
-  print('  - Project    '    + colored('CMakeCache.txt', 'cyan') + '       path         is: ' + colored(cfg.CMAKECACHE_TXT_FILE.replace(cfg.PROJECT_FULLDIR, ''), 'green'))
-  print('  - Project    '    + colored('testing build output', 'cyan') + ' subdirectory is: ' + colored(cfg.TESTS_FULLDIR.replace(cfg.PROJECT_FULLDIR, ''), 'green'))
+def print_help():
+  print('List of ' + colored('legal parameters', 'yellow') + ':')
+  print('Parameter                     Description')
+  print('---------                     -----------')
+  print('-h,    --help                 This help')
+  print('-path, --print-all-paths      Prints all the paths used by the project (used for debugging purposes)')
   print()
+  print('-bt,    --buildTests           Build the tests')
+  print('-bd,    --buildDoc             Build the Doxygen documentation')
+  print()
+  print('-cc,   --cleanCache           Clean the project\'s Cache (Removes `' + colored('CMakeCache.txt', 'yellow') + '`)')
+  print('-cp,   --cleanProject         Clean the project')
+  print()
+  print('-d,    --doxyDoc              Open the Doxygen documentation in the default browser')
+  print()
+  print('-p,    --prepareBuildFiles    Prepare build files for the tests. CMake will use the default generator')
+  print('-p -G \"Generator\"             Prepare build files for the tests, specifying the generator (for example, \"Unix Makefiles\")')
+  print()
+  print('-r,    --removeBuildDir       Remove build directory')
+  print()
+  print('-t,    --test                 Run tests')
+  print('-tv,   --testVerbose          Run tests verbosely')
+  print('-tf,   --testFailed           Re-run only failed tests')
+  print()
+  return
+
+
+def print_paths():
+  print('List of all ' + colored('paths', 'yellow') + ' used by this project:')
+  print(colored('PROJECT_NAME        ', 'cyan') + ': ' + cfg.PROJECT_NAME)
+  print(colored('INCLUDE_FILES_SUBDIR', 'cyan') + ': ' + cfg.INCLUDE_FILES_SUBDIR)
+  print(colored('SOURCE_FILES_SUBDIR ', 'cyan') + ': ' + cfg.SOURCE_FILES_SUBDIR)
+  print(colored('BUILD_SUBDIR        ', 'cyan') + ': ' + cfg.BUILD_SUBDIR)
+  print(colored('TESTS_SUBDIR        ', 'cyan') + ': ' + cfg.TESTS_SUBDIR)
+  print(colored('PROJECT_FULLDIR     ', 'cyan') + ': ' + cfg.PROJECT_FULLDIR)
+  print(colored('BUILD_FULLDIR       ', 'cyan') + ': ' + cfg.BUILD_FULLDIR)
+  print(colored('TESTS_FULLDIR       ', 'cyan') + ': ' + cfg.TESTS_FULLDIR)
+  print(colored('CMAKECACHE_TXT_FILE ', 'cyan') + ': ' + cfg.CMAKECACHE_TXT_FILE)
+  return
 
 
 def execute_user_choice():
@@ -44,12 +85,16 @@ def execute_user_choice():
     print_paths()
     return
 
-  if user_choice == '--buildTests' or user_choice == '-b':
+  if user_choice == '--buildTests' or user_choice == '-bt':
     build_tests()
+  elif user_choice == '--buildDoc' or user_choice == '-bd':
+    build_doc()
   elif user_choice == '--cleanCache' or user_choice == '-cc':
     clean_cache()
   elif user_choice == '--cleanProject' or user_choice == '-cp':
     clean_project()
+  elif user_choice == '--doxyDoc' or user_choice == '-d':
+    open_doc()
   elif user_choice == '--prepareBuildFiles' or user_choice == '-p':
     # Check for the -G option to specify the generator
     if '-G' in sys.argv:
@@ -93,7 +138,7 @@ def build_tests():
   if not os.path.exists(cfg.BUILD_SUBDIR):
     utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': directory \"' + cfg.BUILD_SUBDIR + '\" does not exist. Try preparing build files first.')
 
-  print(colored('\nBuilding tests...', 'cyan'))
+  print(colored('\nBuilding tests...', 'white', 'on_blue'))
   command = ['cmake', '--build', cfg.BUILD_SUBDIR, '-j8']
   print('\nExecuting command: ' + colored(' '.join(command), 'yellow'))
 
@@ -105,6 +150,50 @@ def build_tests():
   else:
     print()
     utl.print_successful_event('Project built successfully.')
+
+
+def build_doc():
+  print('\n' + colored('Building Doxygen documentation...', 'white', 'on_blue'))
+  command = ['doxygen', 'Doxyfile']
+  print('\nExecuting command: ' + colored(' '.join(command), 'yellow'))
+
+  try:
+    os.chdir(cfg.DOXYGEN_SUBDIR)
+    subprocess.run(command, check = True)
+  except Exception as ex:
+    print(ex)
+    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error building documentation.')
+  else:
+    print()
+    utl.print_successful_event('Documentation built successfully.')
+
+
+# Open Doxygen documentation in the default browser
+def open_doc():
+  if not os.path.exists(cfg.DOXYGEN_INDEX_HTML):
+    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': file \"' + cfg.DOXYGEN_INDEX_HTML + '\" does not exist. Try building the documentation first.')
+
+  if cfg.PLATFORM_SYSTEM == 'Linux':
+    command = ['xdg-open', cfg.DOXYGEN_INDEX_HTML]
+  elif cfg.PLATFORM_SYSTEM == 'Darwin':
+    command = ['open', cfg.DOXYGEN_INDEX_HTML]
+  elif cfg.PLATFORM_SYSTEM == 'Windows':
+    command = ['start', cfg.DOXYGEN_INDEX_HTML]
+  else:
+    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': ' + cfg.PLATFORM_NOT_RECOGNISED_STR)
+
+  print('\nExecuting command: ' + colored(' '.join(command), 'yellow'))
+  try:
+    if cfg.PLATFORM_SYSTEM == 'Windows':
+      subprocess.run(command, shell = True, check = True) # `shell = True` is needed for Windows
+    else:
+      subprocess.run(command, check = True)
+  except Exception as ex:
+    print(ex)
+    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error opening documentation.')
+  else:
+    print()
+    utl.print_successful_event('Documentation opened successfully.')
 
 
 def clean_project():
@@ -199,43 +288,3 @@ def test_project(testing_type: str = cfg.TESTING_TYPE_NORMAL):
   else:
     print()
     utl.print_successful_event('Testing was successful.')
-
-
-def print_help():
-  print('List of ' + colored('legal parameters', 'yellow') + ':')
-  print('Parameter                     Description')
-  print('---------                     -----------')
-  print('-h,    --help                 This help')
-  print('-path, --print-all-paths      Prints all the paths used by the project (used for debugging purposes)')
-  print()
-  print('-b,    --buildTests           Build the tests')
-  print()
-  print('-cc,   --cleanCache           Clean the project\'s Cache (Removes `' + colored('CMakeCache.txt', 'yellow') + '`)')
-  print('-cp,   --cleanProject         Clean the project')
-  print()
-  print('-p,    --prepareBuildFiles    Prepare build files for the tests. CMake will use the default generator')
-  print('-p -G \"Generator\"             Prepare build files for the tests, specifying the generator (for example, \"Unix Makefiles\")')
-  print()
-  print('-r,    --removeBuildDir       Remove build directory')
-  print()
-  print('-t,    --test                 Run tests')
-  print('-tv,   --testVerbose          Run tests verbosely')
-  print('-tf,   --testFailed           Re-run only failed tests')
-  print()
-  return
-
-
-# Ordering reflects definition order
-def print_paths():
-  print('List of all ' + colored('paths', 'yellow') + ' used by this project:')
-  print(colored('PROJECT_NAME        ', 'cyan') + ': ' + cfg.PROJECT_NAME)
-  print(colored('INCLUDE_FILES_SUBDIR', 'cyan') + ': ' + cfg.INCLUDE_FILES_SUBDIR)
-  print(colored('SOURCE_FILES_SUBDIR ', 'cyan') + ': ' + cfg.SOURCE_FILES_SUBDIR)
-  print(colored('BUILD_SUBDIR        ', 'cyan') + ': ' + cfg.BUILD_SUBDIR)
-  print(colored('TESTS_SUBDIR        ', 'cyan') + ': ' + cfg.TESTS_SUBDIR)
-  print(colored('PROJECT_FULLDIR     ', 'cyan') + ': ' + cfg.PROJECT_FULLDIR)
-  print(colored('BUILD_FULLDIR       ', 'cyan') + ': ' + cfg.BUILD_FULLDIR)
-  print(colored('TESTS_FULLDIR       ', 'cyan') + ': ' + cfg.TESTS_FULLDIR)
-  print(colored('CMAKECACHE_TXT_FILE ', 'cyan') + ': ' + cfg.CMAKECACHE_TXT_FILE)
-
-  return
