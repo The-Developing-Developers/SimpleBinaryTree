@@ -8,8 +8,8 @@
     - [Invoking the Scripts](#invoking-the-scripts)
       - [1. Setup Script](#1-setup-script)
       - [2. Launcher Script](#2-launcher-script)
-    - [Tests Executable](#tests-executable)
   - [Method 2. CMake](#method-2-cmake)
+- [Tests Executable](#tests-executable)
 - [Documentation](#documentation)
   - [Prerequisites](#prerequisites-1)
   - [Generating the Documentation](#generating-the-documentation)
@@ -78,24 +78,7 @@ When preparing the build files with the `-p` option, the script will autodetect 
   python .\scripts\launcher.py -t
   ```
 
-### Tests Executable
-
-The tests are built from a [test source file](tests/test_binary_tree.cpp), based on Google Test, that also demonstrates how to use the binary tree.
-
-- When using [Method 1](#method-1-build-scripts), the test program is built by default when invoking the `launcher.py` script with the `-b` option.
-- When using [Method 2](#method-2-cmake), building the test program is disabled, so that it does not automatically download Google Test and create unnecessary artefacts in your project.
-
-You can enable building the test program by setting the `BUILD_TESTS` option to `ON` in your project's `CMakeLists.txt` file, or by passing the `-DBUILD_TESTS=ON` option to the `cmake` command.
-
-The test executable will be created in a subdirectory according to the build system used. For example:
-- If you built the project with MSVC, you can find the executable in the `build/tests/Debug` directory.
-- If you built the project with MinGW or GCC, you can find the executable in the `build/tests` directory.
-
-Alternatively, you can execute the test program invoking the `launcher.py` script with the `-t` option:
-
-```bash
-python3 ./scripts/launcher.py -t
-```
+**NOTE**: The `launcher.py` script is a wrapper around `main.py`. The latter is the script that actually prepares the build files, builds the project, and runs the test program. However, `main.py` requires the virtual environment to be activated before running it. The `launcher.py` script takes care of activating the virtual environment and running `main.py` with the appropriate arguments.
 
 
 ## Method 2. CMake
@@ -135,6 +118,22 @@ add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE SimpleBinaryTree)
 ```
 
+# Tests Executable
+
+The tests are built from a [test source file](tests/test_binary_tree.cpp), based on Google Test, that also demonstrates how to use the binary tree.
+
+- When using [Method 1](#method-1-build-scripts) (build scripts), the test program is built by default when invoking the `launcher.py` script with the `-b` option.
+- When using [Method 2](#method-2-cmake) (CMake), building the test program is disabled, so that it does not automatically download Google Test and create unnecessary artefacts in your project. You can enable building the test program by setting the `BUILD_TESTS` option to `ON` in your project's `CMakeLists.txt` file, or by passing the `-DBUILD_TESTS=ON` option to the `cmake` command.
+
+The test executable will be created in a subdirectory according to the build system used. For example:
+- If you built the project with MSVC, you can find the executable in the `build/tests/Debug` directory.
+- If you built the project with MinGW or GCC, you can find the executable in the `build/tests` directory.
+
+Alternatively, you can execute the test program invoking the `launcher.py` script with the `-t` option:
+
+```bash
+python3 ./scripts/launcher.py -t
+```
 
 # Documentation
 
