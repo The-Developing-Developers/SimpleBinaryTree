@@ -6,22 +6,45 @@ import subprocess
 import shutil
 import sys
 
-from   termcolor import cprint, colored
-from .           import utils  as utl
-from .           import config as cfg
+from termcolor  import colored
+from .utils     import raise_runtime_error, print_successful_event, print_white_on_blue, print_executing_command, print_config_variables
+from .config    import Config as cfg
 
 # ---- Functions definitions ---- #
 
 def assign_and_display_project_paths():
-  print('Project\'s '     + colored('paths', 'yellow') + ':')
-  print('  - Repository ' + colored('root', 'cyan') + '                 directory    is: ' + colored(cfg.PROJECT_FULLDIR, 'green'))
-  print('  - Project    '    + colored('build base', 'cyan') + '           subdirectory is: ' + colored(cfg.BUILD_FULLDIR.replace(cfg.PROJECT_FULLDIR, ''), 'green'))
-  print('  - Project    '    + colored('CMakeCache.txt', 'cyan') + '       path         is: ' + colored(cfg.CMAKECACHE_TXT_FILE.replace(cfg.PROJECT_FULLDIR, ''), 'green'))
-  print('  - Project    '    + colored('testing build output', 'cyan') + ' subdirectory is: ' + colored(cfg.TESTS_FULLDIR.replace(cfg.PROJECT_FULLDIR, ''), 'green'))
+  '''
+  Assigns and displays the project's paths based on the platform.
+
+  This function assigns the project's variable paths based on the platform (Linux, Darwin, or Windows) and displays
+  them. If the platform is not recognized, it quits with an error message.
+  '''
+
+  # This project uses the Config class to store all the configuration variables. No project-specific paths are determined at run-time.
+
+  if cfg.PLATFORM_SYSTEM == 'Windows':
+    PROJECT_PATH: str = cfg.DIRFUL_REPOSITORY + '\\' # The project's root directory, withouth the trailing backslash
+  elif cfg.PLATFORM_SYSTEM in ['Linux', 'Darwin']:
+    PROJECT_PATH: str = cfg.DIRFUL_REPOSITORY + '/' # The project's root directory, withouth the trailing slash
+  else:
+    raise_runtime_error(cfg.PLATFORM_NOT_RECOGNISED_STR)
+
+  print('Project\'s ' + colored('paths', 'yellow') + ' and ' + colored('files', 'cyan') + ':\n')
+  print('  - Repository ' + colored('root', 'cyan') +  '                   directory    is: ' + colored(cfg.DIRFUL_REPOSITORY, 'green'))
+  print('  - Project    ' + colored('build base', 'cyan') +  '             subdirectory is: ' + colored(cfg.DIRFUL_BUILD_BASE.replace(PROJECT_PATH, ''), 'green'))
+  print('  - Project    ' + colored('debug CMakeCache.txt', 'green') + '   file path    is: ' + colored(cfg.FILFUL_CMAKE_CACHE_DEB.replace(PROJECT_PATH, ''), 'cyan'))
+  print('  - Project    ' + colored('release CMakeCache.txt', 'green') + ' file path    is: ' + colored(cfg.FILFUL_CMAKE_CACHE_REL.replace(PROJECT_PATH, ''), 'cyan'))
+  print('  - Project    ' + colored('testing build output', 'cyan') +  '   subdirectory is: ' + colored(cfg.DIRFUL_TESTS_BUILD.replace(PROJECT_PATH, ''), 'green'))
   print()
 
 
 def print_args_and_interpreter():
+  '''
+  Prints the command-line arguments and the Python interpreter information.
+
+  This function prints the command-line arguments passed to the script and the path to the Python interpreter.
+  '''
+
   print('This script has been called with the following arguments:')
   for idx, argument in enumerate(sys.argv):
     print('  - Argument #' + str(idx) + ' is: ' + colored(argument, 'green'))
@@ -30,10 +53,17 @@ def print_args_and_interpreter():
 
 
 def print_help():
+  '''
+  Prints the help message with a list of legal parameters.
+
+  This function prints a help message that lists all the legal parameters and their descriptions.
+  '''
+
   print('List of ' + colored('legal parameters', 'yellow') + ':')
   print('Parameter                     Description')
   print('---------                     -----------')
   print('-h,    --help                 This help')
+  print()
   print('-path, --print-all-paths      Prints all the paths used by the project (used for debugging purposes)')
   print()
   print('-bt,    --buildTests           Build the tests')
@@ -53,21 +83,17 @@ def print_help():
   print('-tv,   --testVerbose          Run tests verbosely')
   print('-tf,   --testFailed           Re-run only failed tests')
   print()
-  return
 
 
 def print_paths():
-  print('List of all ' + colored('paths', 'yellow') + ' used by this project:')
-  print(colored('PROJECT_NAME        ', 'cyan') + ': ' + cfg.PROJECT_NAME)
-  print(colored('INCLUDE_FILES_SUBDIR', 'cyan') + ': ' + cfg.INCLUDE_FILES_SUBDIR)
-  print(colored('SOURCE_FILES_SUBDIR ', 'cyan') + ': ' + cfg.SOURCE_FILES_SUBDIR)
-  print(colored('BUILD_SUBDIR        ', 'cyan') + ': ' + cfg.BUILD_SUBDIR)
-  print(colored('TESTS_SUBDIR        ', 'cyan') + ': ' + cfg.TESTS_SUBDIR)
-  print(colored('PROJECT_FULLDIR     ', 'cyan') + ': ' + cfg.PROJECT_FULLDIR)
-  print(colored('BUILD_FULLDIR       ', 'cyan') + ': ' + cfg.BUILD_FULLDIR)
-  print(colored('TESTS_FULLDIR       ', 'cyan') + ': ' + cfg.TESTS_FULLDIR)
-  print(colored('CMAKECACHE_TXT_FILE ', 'cyan') + ': ' + cfg.CMAKECACHE_TXT_FILE)
-  return
+  '''
+  Prints all the paths used by the project.
+
+  This function prints a list of all the paths used by the project, including directories and files.
+  '''
+
+  print('List of all ' + colored('paths', 'yellow') + ' used by this project:\n')
+  print_config_variables()
 
 
 def execute_user_choice():
@@ -88,19 +114,19 @@ def execute_user_choice():
   if user_choice == '--buildTests' or user_choice == '-bt':
     build_tests()
   elif user_choice == '--buildDoc' or user_choice == '-bd':
-    build_doc()
+    build_documentation()
   elif user_choice == '--cleanCache' or user_choice == '-cc':
     clean_cache()
   elif user_choice == '--cleanProject' or user_choice == '-cp':
     clean_project()
   elif user_choice == '--doxyDoc' or user_choice == '-d':
-    open_doc()
+    open_documentation()
   elif user_choice == '--prepareBuildFiles' or user_choice == '-p':
     # Check for the -G option to specify the generator
     if '-G' in sys.argv:
-      generator_index = sys.argv.index('-G') + 1
-      if generator_index < len(sys.argv):
-        generator = sys.argv[generator_index]
+      generator_index = sys.argv.index('-G') + 1 # Get the index of the generator string, such as 'Ninja'
+      if generator_index < len(sys.argv): # Check if the index is within the bounds of the list
+        generator = sys.argv[generator_index] # Get the generator string
     prepare_build_files(generator)
   elif user_choice == '--removeBuildDir' or user_choice == '-r':
     remove_build_dir()
@@ -118,173 +144,232 @@ def execute_user_choice():
 
 def prepare_build_files(generator: str = None):
   print(colored("\nPreparing build files...", 'cyan'))
-  command = ['cmake', '-S', '.', '-B', cfg.BUILD_SUBDIR, '-DBUILD_TESTS=ON']
+  COMMAND: list[str] = ['cmake', '-S', '.', '-B', cfg.DIRNAM_BUILD, '-DBUILD_TESTS=ON']
   if generator:
     print('\nUsing the ' + colored('user-specified generator', 'yellow') + ': ' + colored(generator, 'cyan'))
-    command.extend(['-G', generator])
-  print("\nExecuting command: " + colored(' '.join(command), 'yellow'))
+    COMMAND.extend(['-G', generator])
+  print("\nExecuting command: " + colored(' '.join(COMMAND), 'yellow'))
 
   try:
-    subprocess.run(command, check = True)
+    subprocess.run(COMMAND, check = True)
   except Exception as ex:
     print(ex)
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error preparing configuration files.')
-  else:
-    print()
-    utl.print_successful_event("Project build files prepared successfully.")
+    raise_runtime_error(f'Error preparing configuration files:\n{ex}')
+
+  print()
+  print_successful_event('Project build files prepared successfully.')
 
 
 def build_tests():
-  if not os.path.exists(cfg.BUILD_SUBDIR):
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': directory \"' + cfg.BUILD_SUBDIR + '\" does not exist. Try preparing build files first.')
+  """
+  Builds the tests for the project.
+  """
 
-  print(colored('\nBuilding tests...', 'white', 'on_blue'))
-  command = ['cmake', '--build', cfg.BUILD_SUBDIR, '-j8']
-  print('\nExecuting command: ' + colored(' '.join(command), 'yellow'))
+  print_white_on_blue('Building tests...')
 
-  try:
-    subprocess.run(command, check = True)
-  except Exception as ex:
-    print(ex)
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error calling `CMake --build` for this configuration. Make sure you have run the `--prepareBuildFiles` task first.')
-  else:
-    print()
-    utl.print_successful_event('Project built successfully.')
+  if not os.path.exists(cfg.DIRNAM_BUILD):
+    raise_runtime_error(f': directory ' + colored(cfg.DIRNAM_BUILD, 'yellow') + ' does not exist. Try preparing build files first.')
 
-
-def build_doc():
-  print('\n' + colored('Building Doxygen documentation...', 'white', 'on_blue'))
-  command = ['doxygen', 'Doxyfile']
-  print('\nExecuting command: ' + colored(' '.join(command), 'yellow'))
+  COMMAND: list[str] = ['cmake', '--build', cfg.DIRNAM_BUILD, '-j8']
+  print_executing_command(COMMAND, os.getcwd())
 
   try:
-    os.chdir(cfg.DOXYGEN_SUBDIR)
-    subprocess.run(command, check = True)
+    subprocess.run(COMMAND, check = True)
   except Exception as ex:
-    print(ex)
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error building documentation.')
-  else:
-    print()
-    utl.print_successful_event('Documentation built successfully.')
+    raise_runtime_error(f'Error building tests:\n{ex}. Try preparing build files first.')
+
+  print()
+  print_successful_event('Tests built successfully.')
+
+
+def build_documentation():
+  """
+  Builds the documentation for the project.
+  """
+
+  print_white_on_blue('Building documentation...')
+
+  if shutil.which(cfg.DIRNAM_DOXYGEN) is None:
+    raise_runtime_error('Doxygen is not installed, or the executable is not in the ' + colored('PATH', 'yellow') + ' environment variable.')
+
+  # Check if the Doxyfile exists
+  if not os.path.exists(cfg.FILFUL_DOXYFILE):
+    raise_runtime_error('File ' + colored(cfg.FILFUL_DOXYFILE, 'cyan') + ' does not exist.')
+
+  os.chdir(cfg.DIRFUL_DOXYGEN)  # Change directory so that the COMMAND is executed in the correct directory
+  COMMAND: list[str] = ['doxygen', 'Doxyfile']
+
+  try:
+    print_executing_command(COMMAND, os.getcwd())
+    subprocess.run(COMMAND, check = True)
+  except Exception as ex:
+    raise_runtime_error(f'Error building documentation:\n{ex}')
+
+  print_successful_event('Documentation built successfully.')
 
 
 # Open Doxygen documentation in the default browser
-def open_doc():
-  if not os.path.exists(cfg.DOXYGEN_INDEX_HTML):
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': file \"' + cfg.DOXYGEN_INDEX_HTML + '\" does not exist. Try building the documentation first.')
+def open_documentation():
+  '''
+  Opens the documentation in the default web browser.
+  '''
+
+  print_white_on_blue(f'Opening documentation...')
+
+  if not os.path.exists(cfg.FILFUL_DOXYGEN_OUTPUT_HTML):
+    raise_runtime_error(f'File {colored(cfg.FILFUL_DOXYGEN_OUTPUT_HTML, "cyan")} does not exist. Try building the documentation first.')
 
   if cfg.PLATFORM_SYSTEM == 'Linux':
-    command = ['xdg-open', cfg.DOXYGEN_INDEX_HTML]
+    COMMAND: list[str] = ['xdg-open', cfg.FILFUL_DOXYGEN_OUTPUT_HTML]
   elif cfg.PLATFORM_SYSTEM == 'Darwin':
-    command = ['open', cfg.DOXYGEN_INDEX_HTML]
+    COMMAND: list[str] = ['open', cfg.FILFUL_DOXYGEN_OUTPUT_HTML]
   elif cfg.PLATFORM_SYSTEM == 'Windows':
-    command = ['start', cfg.DOXYGEN_INDEX_HTML]
+    COMMAND: list[str] = ['start', cfg.FILFUL_DOXYGEN_OUTPUT_HTML]
   else:
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': ' + cfg.PLATFORM_NOT_RECOGNISED_STR)
+    raise_runtime_error(cfg.PLATFORM_NOT_RECOGNISED_STR)
 
-  print('\nExecuting command: ' + colored(' '.join(command), 'yellow'))
+  print_executing_command(COMMAND, os.getcwd())
   try:
     if cfg.PLATFORM_SYSTEM == 'Windows':
-      subprocess.run(command, shell = True, check = True) # `shell = True` is needed for Windows
+      subprocess.run(COMMAND, shell = True, check = True)  # `shell = True` is needed for Windows
     else:
-      subprocess.run(command, check = True)
+      subprocess.run(COMMAND, check = True)
   except Exception as ex:
-    print(ex)
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error opening documentation.')
-  else:
-    print()
-    utl.print_successful_event('Documentation opened successfully.')
+    raise_runtime_error(f'Error opening documentation:\n{ex}')
+
+  print()
+  print_successful_event(f'Documentation opened successfully.')
 
 
 def clean_project():
-  if not os.path.exists(cfg.BUILD_SUBDIR):
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': directory \"' + cfg.BUILD_SUBDIR + '\" does not exist.')
+  '''
+  Cleans the project by removing build artifacts.
+  '''
 
-  command = ['cmake', '--build', cfg.BUILD_SUBDIR, '--target', 'clean']
-  print('\nExecuting command: ' + colored(' '.join(command), 'yellow'))
+  print_white_on_blue('Cleaning project...')
+
+  if not os.path.exists(cfg.DIRNAM_BUILD):
+    raise_runtime_error(f'Error cleaning project: path {colored(cfg.DIRNAM_BUILD, "yellow")} does not exist.')
+
+  COMMAND: list[str] = ['cmake', '--build', cfg.DIRNAM_BUILD, '--target', 'clean']
+  print_executing_command(COMMAND, os.getcwd())
+
   try:
-    subprocess.run(command, check = True)
+    subprocess.run(COMMAND, check = True)
   except Exception as ex:
-    print(ex)
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error cleaning project.')
-  else:
-    print()
-    utl.print_information(cfg.BUILD_SUBDIR + ' directory has been cleaned.')
+    raise_runtime_error(f'Error cleaning project:\n{ex}')
+
+  print_successful_event(colored(cfg.DIRNAM_BUILD, 'yellow') + ' directory has been cleaned.')
 
 
-def clean_cache():
-  if not os.path.exists(cfg.CMAKECACHE_TXT_FILE):
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': file \"' + cfg.CMAKECACHE_TXT_FILE + '\" not found.')
+def clean_cache(user_config_choice: str = cfg.BUILD_CONFIG_DEBUG):
+  '''
+  Cleans the project's cache for the specified configuration.
+  '''
 
-  print('\nAttempting to remove ' + colored(cfg.CMAKECACHE_TXT_FILE, 'yellow') + '...')
+  print_white_on_blue('Cleaning project cache...')
+
+  if user_config_choice == cfg.BUILD_CONFIG_DEBUG:
+    CMAKE_CACHE_PATH_FINAL: str = cfg.FILFUL_CMAKE_CACHE_DEB
+  elif user_config_choice == cfg.BUILD_CONFIG_RELEASE:
+    CMAKE_CACHE_PATH_FINAL: str = cfg.FILFUL_CMAKE_CACHE_REL
+
+  print('\nAttempting to remove ' + colored(CMAKE_CACHE_PATH_FINAL, 'cyan') + '...')
+  if not os.path.exists(CMAKE_CACHE_PATH_FINAL):
+    raise_runtime_error('Error cleaning project cache: file ' + colored(CMAKE_CACHE_PATH_FINAL, 'cyan') + ' does not exist.')
+
   try:
-    os.remove(cfg.CMAKECACHE_TXT_FILE)
+    os.remove(CMAKE_CACHE_PATH_FINAL)
   except Exception as ex:
-    print(ex)
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Error trying to remove ' + cfg.CMAKECACHE_TXT_FILE + '.')
-  else:
-    utl.print_information(cfg.CMAKECACHE_TXT_FILE + ' has been removed.\n')
+    raise_runtime_error(f'Error trying to remove file ' + colored(CMAKE_CACHE_PATH_FINAL, 'cyan') + f':\n{ex}')
+
+  print()
+  print_successful_event('File ' + colored(CMAKE_CACHE_PATH_FINAL, 'cyan') + ' has been removed.')
 
 
 def remove_build_dir():
-  if not os.path.exists(cfg.BUILD_SUBDIR):
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': directory \"' + cfg.BUILD_SUBDIR + '\" does not exist.')
+  '''
+  Removes the build directory.
+  '''
 
-  print('\nAttempting to remove ' + colored(cfg.BUILD_SUBDIR, 'yellow') + '...')
+  print_white_on_blue('Removing build directory...')
+  print()
+
+  if not os.path.exists(cfg.DIRFUL_BUILD_BASE):
+    raise_runtime_error('Directory ' + colored(cfg.DIRFUL_BUILD_BASE, 'yellow') + ' does not exist.')
+
   try:
-    shutil.rmtree(cfg.BUILD_SUBDIR)
+    shutil.rmtree(cfg.DIRFUL_BUILD_BASE) # First attempt: use shutil.rmtree() to remove the build directory recursively
   except Exception as ex1:
-    print(ex1)
-    print('Error using `' + colored('shutil.rmtree', 'yellow') + '`. Trying with command line instructions...')
+    # shutil.rmtree() may unexpectedly fail on Windows due to a file lock. If this happens, try to remove the directory using command line instructions.
+    print(colored('Error', 'red') + ' using ' + colored('shutil.rmtree', 'cyan') + f':\n{ex1}')
+
     try:
-      if cfg.PLATFORM_SYSTEM in ['Linux', 'Darwin']:
-        os.system('rm -rf \"{}\"'.format(cfg.BUILD_SUBDIR))
-      elif cfg.PLATFORM_SYSTEM == 'Windows':
-        os.system('rmdir /S /Q \"{}\"'.format(cfg.BUILD_SUBDIR))
-      else:
-        utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': ' + cfg.PLATFORM_NOT_RECOGNISED_STR)
-    except Exception as ex2:
-      print(ex2)
-      cprint('Error using command line instructions.', 'red')
-      return
-    else:
-      print('Directory `' + colored(cfg.BUILD_SUBDIR, 'yellow') + '` has been removed.')
       print()
-  else:
-    print('Directory `' + colored(cfg.BUILD_SUBDIR, 'yellow') + '` has been removed.')
-    print()
+      print_white_on_blue('Now trying with command line instructions...')
+
+      if cfg.PLATFORM_SYSTEM in ['Linux', 'Darwin']:
+        COMMAND: list[str] = ['rm', '-rf', cfg.DIRFUL_BUILD_BASE]
+      elif cfg.PLATFORM_SYSTEM == 'Windows':
+        COMMAND = ['powershell', '-Command', f'Remove-Item -Recurse -Force {cfg.DIRFUL_BUILD_BASE}']
+      else:
+        raise_runtime_error(cfg.PLATFORM_NOT_RECOGNISED_STR)
+
+      print_executing_command(COMMAND, os.getcwd())
+      subprocess.run(COMMAND, check = True)
+    except Exception as ex2:
+      # Command line instructions also failed
+      raise_runtime_error('Error using command line instructions to remove directory ' + colored(cfg.DIRFUL_BUILD_BASE, 'yellow') + f':\n{ex2}')
+
+  print_successful_event('Directory ' + colored(cfg.DIRFUL_BUILD_BASE, 'yellow') + ' has been removed.')
 
 
 def test_project(testing_type: str = cfg.TESTING_TYPE_NORMAL):
-  if not os.path.exists(cfg.TESTS_FULLDIR):
-    utl.quit_with_error_message(inspect.currentframe().f_code.co_name + ': Testing subdirectory \"' + cfg.TESTS_FULLDIR + '\" does not exist. Try preparing and building first.')
+  '''
+  Tests the project with the specified testing type TODO: and code coverage option.
+  '''
+
+  print_white_on_blue('Testing project...')
+
+  if not os.path.exists(cfg.DIRFUL_TESTS_BUILD):
+    raise_runtime_error('Testing subdirectory ' + colored(cfg.DIRFUL_TESTS_BUILD, 'yellow') + ' does not exist. Try preparing and building the debug configuration first.')
 
   parameter: list[str] = []
-  TESTING_PARAM_VERBOSE:     list[str] = ['-VV']
-  TESTING_PARAM_ONLY_FAILED: list[str] = ['--rerun-failed', '--output-on-failure']
 
   if testing_type == cfg.TESTING_TYPE_VERBOSE:
-    parameter = TESTING_PARAM_VERBOSE
+    parameter.append(cfg.TESTING_PARAM_VERBOSE)
   elif testing_type == cfg.TESTING_TYPE_ONLY_FAILED:
-    parameter = TESTING_PARAM_ONLY_FAILED
+    parameter.append(cfg.TESTING_PARAM_RERUN_FAILED)
+    parameter.append(cfg.TESTING_PARAM_OUT_ON_FAILURE)
 
-  command: list[str] = ['ctest'] + parameter
-  os.chdir(cfg.TESTS_FULLDIR)
-  print('\nExecuting command: ' + colored(' '.join(command), 'yellow') + '\n')
+  if not os.path.exists(cfg.DIRFUL_TESTS_BUILD):
+    raise_runtime_error('Testing subdirectory ' + colored(cfg.DIRFUL_TESTS_BUILD, 'yellow') + ' does not exist. Try preparing and building the debug configuration first.')
+
+  os.chdir(cfg.DIRFUL_TESTS_BUILD)
+
   try:
-    subprocess.run(command, check = True)
-  except subprocess.CalledProcessError as ex:
-    print(ex)
-    print(colored('\nERROR: initial testing failed.', 'white', 'on_red'))
-    print('Re-running failed tests...')
-    try:
-      parameter = TESTING_PARAM_ONLY_FAILED
-      command = ['ctest'] + parameter
-      print('\nExecuting command: ' + colored(' '.join(command), 'yellow') + '\n')
-      subprocess.run(command, check = True)
-    except subprocess.CalledProcessError as ex:
-      print(ex)
-      utl.print_unsuccessful_event('Some tests failed.')
-  else:
+    COMMAND: list[str] = ['ctest'] + parameter
+    print_executing_command(COMMAND, os.getcwd())
+    subprocess.run(COMMAND, check = True)
+  except Exception as ex:
     print()
-    utl.print_successful_event('Testing was successful.')
+    print(colored('ERROR', 'white', 'on_red')+ f': initial testing failed:\n{ex}')
+    print()
+    print_white_on_blue('Re-running failed tests only...')
+    parameter = [cfg.TESTING_PARAM_RERUN_FAILED, cfg.TESTING_PARAM_OUT_ON_FAILURE]
+    COMMAND: list[str] = ['ctest'] + parameter
+    print_executing_command(COMMAND, os.getcwd())
+
+    try:
+      subprocess.run(COMMAND, check = True)
+    except Exception as ex:
+      print()
+      print(colored('ERROR', 'white', 'on_red') + f': some tests failed.')
+      return # If the re-run fails, return without raising an exception, to avoid triggering other error messages
+
+  print()
+  print_successful_event('Testing was successful.')
+
+  # TODO: Implement code coverage
+  # if run_code_coverage:
+  #   run_code_coverage_tool()

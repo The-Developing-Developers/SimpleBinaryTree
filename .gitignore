@@ -44,3 +44,6 @@ venv
 
 # Doxygen
 docs/doxygen/output
+
+# Miscellaneous
+scripts/changes.py
